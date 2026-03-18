@@ -1,0 +1,17 @@
+{
+  "name": "killing-blow",
+  "private": true,
+  "scripts": {
+    "dev:server": "pnpm --filter server dev",
+    "dev:client": "pnpm --filter client dev",
+    "test": "pnpm -r test --run",
+    "test:server": "pnpm --filter server test --run",
+    "test:shared": "pnpm --filter shared-types test --run"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@prisma/engines", "argon2", "esbuild", "prisma"]
+  }
+}

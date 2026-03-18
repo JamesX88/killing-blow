@@ -12,7 +12,7 @@ Four phases deliver the complete v1 experience. Phase 1 establishes the identity
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Auth, infrastructure, and big-number safety before any game logic is written
+- [x] **Phase 1: Foundation** - Auth, infrastructure, and big-number safety before any game logic is written (completed 2026-03-18)
 - [ ] **Phase 2: Core Boss Loop** - Real-time shared HP bar, damage queue, and server-authoritative killing blow
 - [ ] **Phase 3: Player Progression** - Gold economy, stat upgrades, offline auto-attack, and active play bonus
 - [ ] **Phase 4: Competition and Social** - Killing blow announcements, KB leaderboard, cosmetic titles, and boss lore
@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Player session survives a browser refresh and returning to the URL after closing the tab
   4. All game numbers displayed anywhere in the app render with K/M/B/T suffixes and never show raw integers or Infinity/NaN
   5. Server is running with Redis + PostgreSQL reachable and WebSocket gateway accepting authenticated connections
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [x] 01-01-PLAN.md — Monorepo scaffold, Docker Compose, shared-types with formatNumber
@@ -81,7 +81,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 4/5 | In Progress|  |
+| 1. Foundation | 5/5 | Complete   | 2026-03-18 |
 | 2. Core Boss Loop | 0/TBD | Not started | - |
 | 3. Player Progression | 0/TBD | Not started | - |
 | 4. Competition and Social | 0/TBD | Not started | - |

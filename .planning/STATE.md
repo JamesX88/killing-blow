@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-03-18T13:50:22.128Z"
+stopped_at: "Checkpoint 01-05 Task 3: human-verify full auth flow"
+last_updated: "2026-03-18T14:00:21.243Z"
 last_activity: 2026-03-18 — Plan 01-01 complete; monorepo scaffold + formatNumber utility
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
   percent: 20
 ---
 
@@ -53,6 +53,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-foundation P02 | 5 | 2 tasks | 10 files |
 | Phase 01-foundation P03 | 6 | 2 tasks | 17 files |
 | Phase 01-foundation P04 | 3 | 2 tasks | 6 files |
+| Phase 01-foundation P05 | 12 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Tailwind v4 configured via @import 'tailwindcss' in index.css + @tailwindcss/vite plugin — no tailwind.config.ts file
 - [Phase 01-04]: Conditional OAuth registration: wrap each provider in if(CLIENT_ID && CLIENT_SECRET) so buildApp() works in tests without real OAuth credentials
 - [Phase 01-04]: OAuth callback uses find-then-update-or-create over prisma.upsert to allow including user relation in findUnique query
+- [Phase 01-05]: Gateway uses manual jwt.verify() + cookie.parse() instead of fastify.authenticate — Socket.IO middleware runs outside Fastify request lifecycle
+- [Phase 01-05]: Redis plugin registered in server.ts (not buildApp) to preserve test isolation — buildApp() stays database-agnostic for inject() tests
 
 ### Pending Todos
 
@@ -86,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T13:50:22.126Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-03-18T13:59:21.141Z
+Stopped at: Checkpoint 01-05 Task 3: human-verify full auth flow
 Resume file: None

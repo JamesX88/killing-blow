@@ -1,7 +1,8 @@
 ---
 phase: 1
 slug: foundation
-status: draft
+status: approved
+reviewed_at: 2026-03-18T00:00:00Z
 shadcn_initialized: false
 preset: zinc-dark
 created: 2026-03-18

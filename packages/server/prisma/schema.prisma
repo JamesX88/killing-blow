@@ -18,6 +18,7 @@ model User {
   updatedAt    DateTime @updatedAt
 
   oauthAccounts OAuthAccount[]
+  contributions FightContribution[]
 }
 
 model OAuthAccount {
@@ -31,4 +32,28 @@ model OAuthAccount {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+}
+
+model Boss {
+  id           String    @id @default(cuid())
+  bossNumber   Int       @unique
+  name         String
+  maxHp        Int
+  spawnedAt    DateTime  @default(now())
+  defeatedAt   DateTime?
+  winnerId     String?
+
+  contributions FightContribution[]
+}
+
+model FightContribution {
+  id          String @id @default(cuid())
+  bossId      String
+  userId      String
+  damageDealt Int
+
+  boss Boss @relation(fields: [bossId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([bossId, userId])
 }

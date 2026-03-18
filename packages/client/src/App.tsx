@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import type React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useSessionStore } from './stores/sessionStore.js'
 import Register from './pages/Register.js'
@@ -10,6 +11,12 @@ function AuthRedirect() {
   const { isAuthenticated, isLoading } = useSessionStore()
   if (isLoading) return null
   return <Navigate to={isAuthenticated ? '/game' : '/login'} replace />
+}
+
+function RequireAuth({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useSessionStore()
+  if (!isAuthenticated) return <Navigate to="/login" replace />
+  return <>{children}</>
 }
 
 export default function App() {
@@ -27,7 +34,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:userId" element={<Profile />} />
-        <Route path="/game" element={<Game />} />
+        <Route path="/game" element={<RequireAuth><Game /></RequireAuth>} />
         <Route path="/" element={<AuthRedirect />} />
       </Routes>
     </div>

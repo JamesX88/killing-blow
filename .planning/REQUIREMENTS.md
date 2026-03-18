@@ -9,8 +9,8 @@
 
 - [x] **AUTH-01**: User can register with username and password
 - [x] **AUTH-02**: User session persists across browser refresh and revisit
-- [ ] **AUTH-03**: User has a public profile showing username, kill count, and KB leaderboard rank
-- [ ] **AUTH-04**: User can sign in via OAuth (Google or Discord)
+- [x] **AUTH-03**: User has a public profile showing username, kill count, and KB leaderboard rank
+- [x] **AUTH-04**: User can sign in via OAuth (Google or Discord)
 
 ### Boss Loop
 
@@ -78,8 +78,8 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 |-------------|-------|--------|
 | AUTH-01 | Phase 1 | Complete |
 | AUTH-02 | Phase 1 | Complete |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
 | BOSS-01 | Phase 2 | Pending |
 | BOSS-02 | Phase 2 | Pending |
 | BOSS-03 | Phase 2 | Pending |

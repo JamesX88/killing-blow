@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-18T13:43:12.924Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-03-18T13:50:22.128Z"
 last_activity: 2026-03-18 — Plan 01-01 complete; monorepo scaffold + formatNumber utility
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
+  completed_plans: 4
   percent: 20
 ---
 
@@ -52,6 +52,7 @@ Progress: [██░░░░░░░░] 20%
 *Updated after each plan completion*
 | Phase 01-foundation P02 | 5 | 2 tasks | 10 files |
 | Phase 01-foundation P03 | 6 | 2 tasks | 17 files |
+| Phase 01-foundation P04 | 3 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,8 @@ Recent decisions affecting current work:
 - [Phase 01-02]: fastify-plugin fp() required for cookie+JWT plugins to share authenticate decorator across route scope
 - [Phase 01-foundation]: shadcn v4 uses base-nova style with @base-ui/react primitives and oklch colors — HSL red-600 accent applied on top via --primary: 0 72% 51% in .dark block
 - [Phase 01-foundation]: Tailwind v4 configured via @import 'tailwindcss' in index.css + @tailwindcss/vite plugin — no tailwind.config.ts file
+- [Phase 01-04]: Conditional OAuth registration: wrap each provider in if(CLIENT_ID && CLIENT_SECRET) so buildApp() works in tests without real OAuth credentials
+- [Phase 01-04]: OAuth callback uses find-then-update-or-create over prisma.upsert to allow including user relation in findUnique query
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T13:43:12.922Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-03-18T13:50:22.126Z
+Stopped at: Completed 01-04-PLAN.md
 Resume file: None

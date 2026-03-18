@@ -48,7 +48,13 @@ Plans:
   3. When a boss's HP reaches zero, a death animation plays and the next boss spawns without requiring a page reload
   4. Active player sidebar shows all players currently in the fight with their live damage contribution
   5. Killing blow winner is determined server-side and the award cannot be manipulated by a client sending fabricated damage values
-**Plans**: TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Shared types, Prisma Boss/FightContribution models, kill-claim Lua script and bossState engine
+- [ ] 02-02-PLAN.md — Gateway attack:intent handler, boss route, server.ts wiring with integration tests
+- [ ] 02-03-PLAN.md — Client stores, game components (HP bar, sprite, damage numbers, sidebar), Game.tsx page
+- [ ] 02-04-PLAN.md — Full test suite run and browser verification checkpoint
 
 ### Phase 3: Player Progression
 **Goal**: Players earn gold from dealing damage, spend gold on stat upgrades that increase their DPS, accumulate offline progress when the tab is closed, and receive a bonus for active play
@@ -82,6 +88,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-18 |
-| 2. Core Boss Loop | 0/TBD | Not started | - |
+| 2. Core Boss Loop | 0/4 | In progress | - |
 | 3. Player Progression | 0/TBD | Not started | - |
 | 4. Competition and Social | 0/TBD | Not started | - |

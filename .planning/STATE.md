@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-03-18T13:30:00Z"
+status: executing
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-03-18T13:41:54.176Z"
 last_activity: 2026-03-18 — Plan 01-01 complete; monorepo scaffold + formatNumber utility
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
+  completed_plans: 2
   percent: 20
 ---
 
@@ -50,6 +50,7 @@ Progress: [██░░░░░░░░] 20%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01-foundation P02 | 5 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,9 @@ Recent decisions affecting current work:
 - [01-01]: Prisma 7 requires prisma.config.ts for datasource URL — url property removed from schema.prisma datasource block
 - [01-01]: pnpm onlyBuiltDependencies in root package.json to allow argon2, esbuild, @prisma/engines native build scripts
 - [01-01]: break_eternity.js adopted as canonical Decimal type — all game numbers must flow through formatNumber
+- [Phase 01-02]: argon2.verify() wrapped in try-catch to treat malformed hash errors as invalid credentials (not 500)
+- [Phase 01-02]: Register-then-login test pattern: capture real argon2id hash via mockImplementation for full round-trip test
+- [Phase 01-02]: fastify-plugin fp() required for cookie+JWT plugins to share authenticate decorator across route scope
 
 ### Pending Todos
 
@@ -76,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T13:30:00Z
-Stopped at: Completed 01-01-PLAN.md
-Resume file: .planning/phases/01-foundation/01-02-PLAN.md
+Last session: 2026-03-18T13:41:54.175Z
+Stopped at: Completed 01-02-PLAN.md
+Resume file: None

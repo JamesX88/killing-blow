@@ -15,7 +15,7 @@
 ### Boss Loop
 
 - [ ] **BOSS-01**: All players share a single real-time boss HP bar synced via WebSocket
-- [ ] **BOSS-02**: Player sees floating damage numbers for their own hits on the boss
+- [x] **BOSS-02**: Player sees floating damage numbers for their own hits on the boss
 - [ ] **BOSS-03**: Boss plays a death animation then next boss spawns immediately when HP reaches 0
 - [ ] **BOSS-04**: Boss HP scales dynamically with aggregate player DPS so fights last a reasonable duration
 
@@ -36,7 +36,7 @@
 
 ### Social & UI
 
-- [ ] **UI-01**: Active player sidebar shows all players currently in the fight with their DPS or damage contribution
+- [x] **UI-01**: Active player sidebar shows all players currently in the fight with their DPS or damage contribution
 - [x] **UI-02**: All game numbers are formatted with K/M/B/T suffixes (big number library from day one)
 - [ ] **UI-03**: Player can spend KB Currency on cosmetic titles displayed next to their name
 - [ ] **UI-04**: Each boss displays a unique name and brief lore snippet during the fight
@@ -81,7 +81,7 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
 | BOSS-01 | Phase 2 | Pending |
-| BOSS-02 | Phase 2 | Pending |
+| BOSS-02 | Phase 2 | Complete |
 | BOSS-03 | Phase 2 | Pending |
 | BOSS-04 | Phase 3 | Pending |
 | KB-01 | Phase 2 | Complete |
@@ -93,7 +93,7 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 | PROG-02 | Phase 3 | Pending |
 | PROG-03 | Phase 3 | Pending |
 | PROG-04 | Phase 3 | Pending |
-| UI-01 | Phase 2 | Pending |
+| UI-01 | Phase 2 | Complete |
 | UI-02 | Phase 1 | Complete (01-01) |
 | UI-03 | Phase 4 | Pending |
 | UI-04 | Phase 4 | Pending |

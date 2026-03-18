@@ -48,7 +48,7 @@ Plans:
   3. When a boss's HP reaches zero, a death animation plays and the next boss spawns without requiring a page reload
   4. Active player sidebar shows all players currently in the fight with their live damage contribution
   5. Killing blow winner is determined server-side and the award cannot be manipulated by a client sending fabricated damage values
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 - [ ] 02-01-PLAN.md — Shared types, Prisma Boss/FightContribution models, kill-claim Lua script and bossState engine
@@ -88,6 +88,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-18 |
-| 2. Core Boss Loop | 1/4 | In Progress|  |
+| 2. Core Boss Loop | 2/4 | In Progress|  |
 | 3. Player Progression | 0/TBD | Not started | - |
 | 4. Competition and Social | 0/TBD | Not started | - |

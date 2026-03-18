@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-boss-loop 02-01-PLAN.md
-last_updated: "2026-03-18T20:55:38.113Z"
+stopped_at: Completed 02-core-boss-loop 02-03-PLAN.md
+last_updated: "2026-03-18T21:03:29.445Z"
 last_activity: 2026-03-18 — Plan 01-01 complete; monorepo scaffold + formatNumber utility
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 9
-  completed_plans: 6
+  completed_plans: 7
   percent: 20
 ---
 
@@ -55,6 +55,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 01-foundation P04 | 3 | 2 tasks | 6 files |
 | Phase 01-foundation P05 | 12 | 2 tasks | 7 files |
 | Phase 02-core-boss-loop P01 | 6 | 2 tasks | 7 files |
+| Phase 02-core-boss-loop P03 | 4 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 02-core-boss-loop]: BASE_DAMAGE=25 and BOSS_MAX_HP=1000 hardcoded as Phase 2 constants; getBaseDamage() function provides Phase 3 replacement interface
 - [Phase 02-core-boss-loop]: killClaim.lua uses SETNX for atomic single-winner kill claim; exactly one caller gets the kill when concurrent attacks reduce HP to 0
 - [Phase 02-core-boss-loop]: Username stored in boss:{id}:usernames Redis hash at attack time to avoid DB lookup in getActivePlayers
+- [Phase 02-core-boss-loop]: shadcn progress uses @base-ui/react ProgressTrack/ProgressIndicator sub-components — BossHpBar uses these directly rather than CSS selector approach
+- [Phase 02-core-boss-loop]: DamageNumbers subscribes directly to socket (not via subscribeToGame) to manage local animation state without polluting global store
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T20:55:38.112Z
-Stopped at: Completed 02-core-boss-loop 02-01-PLAN.md
+Last session: 2026-03-18T21:03:29.443Z
+Stopped at: Completed 02-core-boss-loop 02-03-PLAN.md
 Resume file: None

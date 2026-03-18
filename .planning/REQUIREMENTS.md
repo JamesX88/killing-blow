@@ -14,9 +14,9 @@
 
 ### Boss Loop
 
-- [ ] **BOSS-01**: All players share a single real-time boss HP bar synced via WebSocket
+- [x] **BOSS-01**: All players share a single real-time boss HP bar synced via WebSocket
 - [x] **BOSS-02**: Player sees floating damage numbers for their own hits on the boss
-- [ ] **BOSS-03**: Boss plays a death animation then next boss spawns immediately when HP reaches 0
+- [x] **BOSS-03**: Boss plays a death animation then next boss spawns immediately when HP reaches 0
 - [ ] **BOSS-04**: Boss HP scales dynamically with aggregate player DPS so fights last a reasonable duration
 
 ### Killing Blow
@@ -80,9 +80,9 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 | AUTH-02 | Phase 1 | Complete |
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
-| BOSS-01 | Phase 2 | Pending |
+| BOSS-01 | Phase 2 | Complete |
 | BOSS-02 | Phase 2 | Complete |
-| BOSS-03 | Phase 2 | Pending |
+| BOSS-03 | Phase 2 | Complete |
 | BOSS-04 | Phase 3 | Pending |
 | KB-01 | Phase 2 | Complete |
 | KB-02 | Phase 4 | Pending |

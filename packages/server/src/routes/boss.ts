@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify'
-import { getCurrentBossId, getBossState } from '../game/bossState.js'
+import { getCurrentBossId, getBossState, getActivePlayers } from '../game/bossState.js'
 
 export default async function bossRoutes(fastify: FastifyInstance) {
   fastify.get('/boss/current', {
@@ -14,6 +14,7 @@ export default async function bossRoutes(fastify: FastifyInstance) {
     const state = await getBossState(redis, bossId)
     if (!state) return reply.status(503).send({ error: 'Boss state unavailable' })
 
-    return state
+    const activePlayers = await getActivePlayers(redis, bossId)
+    return { ...state, activePlayers }
   })
 }

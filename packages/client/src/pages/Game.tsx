@@ -24,8 +24,12 @@ export default function Game() {
     // Fetch initial boss state via HTTP
     fetch('/boss/current', { credentials: 'include' })
       .then(res => res.ok ? res.json() : null)
-      .then(boss => {
-        if (boss) useBossStore.getState().setBoss(boss)
+      .then(data => {
+        if (data) {
+          const { activePlayers, ...boss } = data
+          useBossStore.getState().setBoss(boss)
+          if (activePlayers) usePlayerStore.getState().setPlayers(activePlayers)
+        }
       })
       .catch(() => {})
 

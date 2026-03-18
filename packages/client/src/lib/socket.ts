@@ -28,5 +28,5 @@ export function unsubscribeFromGame() {
   socket.off('boss:spawn')
   socket.off('boss:death')
   socket.off('player:list_update')
-  socket.off('boss:damage_dealt')
+  // boss:damage_dealt is managed by DamageNumbers — do not remove here
 }

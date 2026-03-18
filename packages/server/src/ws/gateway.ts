@@ -38,10 +38,21 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
   // Per-socket rate limit: max 10 attacks/second (100ms cooldown)
   const lastAttackTime = new Map<string, number>()
 
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
     // socket.data.userId is guaranteed here
     socket.join('global-boss-room')
     console.log(`Player connected: ${socket.data.username} (${socket.data.userId})`)
+
+    // Send current player list to newly connected socket
+    if (redis) {
+      try {
+        const currentBossId = await getCurrentBossId(redis)
+        if (currentBossId) {
+          const players = await getActivePlayers(redis, currentBossId)
+          socket.emit('player:list_update', players)
+        }
+      } catch { /* non-fatal */ }
+    }
 
     socket.on('attack:intent', async ({ bossId }: { bossId: string }) => {
       if (!redis) return
@@ -80,33 +91,43 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
       io.to('global-boss-room').emit('player:list_update', players)
 
       if (killed) {
-        // Resolve winner username
         const winnerUsername = (await redis.hGet(`boss:${bossId}:usernames`, winnerId)) || 'Unknown'
 
         io.to('global-boss-room').emit('boss:death', { bossId, winnerId, winnerUsername })
 
-        // Record defeat in Prisma
-        const bossRecord = await prisma.boss.findFirst({ where: { id: bossId } })
-        if (bossRecord) {
-          await prisma.boss.update({
-            where: { id: bossId },
-            data: { defeatedAt: new Date(), winnerId },
-          })
-          // Save fight contributions from Redis to Prisma
-          const damageHash = await redis.hGetAll(`boss:${bossId}:damage`)
-          const contributions = Object.entries(damageHash).map(([uId, dmg]) => ({
-            bossId,
-            userId: uId,
-            damageDealt: Number(dmg),
-          }))
-          if (contributions.length > 0) {
-            await prisma.fightContribution.createMany({ data: contributions, skipDuplicates: true })
+        // Persist defeat best-effort — DB failure must not block spawn
+        let prevBossNumber = 0
+        try {
+          const bossRecord = await prisma.boss.findFirst({ where: { id: bossId } })
+          if (bossRecord) {
+            prevBossNumber = bossRecord.bossNumber
+            await prisma.boss.update({
+              where: { id: bossId },
+              data: { defeatedAt: new Date(), winnerId },
+            })
+            const damageHash = await redis.hGetAll(`boss:${bossId}:damage`)
+            const contributions = Object.entries(damageHash).map(([uId, dmg]) => ({
+              bossId,
+              userId: uId,
+              damageDealt: Number(dmg),
+            }))
+            if (contributions.length > 0) {
+              await prisma.fightContribution.createMany({ data: contributions, skipDuplicates: true })
+            }
           }
+        } catch (err) {
+          console.error('Failed to persist boss defeat (spawn will still proceed):', err)
         }
 
-        // Spawn next boss immediately (same event loop tick)
-        const nextBoss = await spawnNextBoss(redis, prisma, bossRecord?.bossNumber || 0)
-        io.to('global-boss-room').emit('boss:spawn', nextBoss)
+        // Wait for death animation on client before spawning next boss
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+        try {
+          const nextBoss = await spawnNextBoss(redis, prisma, prevBossNumber)
+          io.to('global-boss-room').emit('boss:spawn', nextBoss)
+        } catch (err) {
+          console.error('Failed to spawn next boss:', err)
+        }
       }
     })
 

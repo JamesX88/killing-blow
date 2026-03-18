@@ -13,7 +13,7 @@ await app.ready()
 
 // Attach Socket.IO to the underlying HTTP server AFTER app.ready()
 const io = new SocketIOServer(app.server, {
-  cors: { origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true }
+  cors: { origin: process.env.CLIENT_URL || 'http://localhost:5174', credentials: true }
 })
 setupGateway(io)
 

@@ -2,6 +2,15 @@ import { Server, Socket } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import { parse as parseCookie } from 'cookie'
 import { createClient } from 'redis'
+import crypto from 'crypto'
+import {
+  applyDamage,
+  getBaseDamage,
+  getCurrentBossId,
+  spawnNextBoss,
+  getActivePlayers,
+} from '../game/bossState.js'
+import { prisma } from '../db/prisma.js'
 
 export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>) {
   // JWT middleware — validates token from cookie on WebSocket upgrade
@@ -26,13 +35,84 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
     }
   })
 
+  // Per-socket rate limit: max 10 attacks/second (100ms cooldown)
+  const lastAttackTime = new Map<string, number>()
+
   io.on('connection', (socket) => {
     // socket.data.userId is guaranteed here
     socket.join('global-boss-room')
     console.log(`Player connected: ${socket.data.username} (${socket.data.userId})`)
 
+    socket.on('attack:intent', async ({ bossId }: { bossId: string }) => {
+      if (!redis) return
+
+      // Rate limit: drop events faster than 100ms from the same socket
+      const now = Date.now()
+      const last = lastAttackTime.get(socket.id) || 0
+      if (now - last < 100) return
+      lastAttackTime.set(socket.id, now)
+
+      // Validate bossId matches current boss — discard stale intents silently
+      const currentBossId = await getCurrentBossId(redis)
+      if (bossId !== currentBossId) return
+
+      const userId = socket.data.userId as string
+      const username = socket.data.username as string
+      const damage = getBaseDamage() // 25
+
+      // Store username for player list (outside Lua — not atomic, but fine for display)
+      await redis.hSet(`boss:${bossId}:usernames`, userId, username)
+
+      // Get maxHp for threshold calculation
+      const maxHpStr = await redis.get(`boss:${bossId}:maxHp`)
+      const maxHp = Number(maxHpStr) || 1000
+
+      const { newHp, killed, winnerId } = await applyDamage(redis, bossId, userId, damage, maxHp)
+
+      // Broadcast HP update to all connected clients
+      io.to('global-boss-room').emit('boss:hp_update', { bossId, hp: newHp, maxHp })
+
+      // Floating damage number to attacker only
+      socket.emit('boss:damage_dealt', { amount: damage, hitId: crypto.randomUUID() })
+
+      // Broadcast updated player list
+      const players = await getActivePlayers(redis, bossId)
+      io.to('global-boss-room').emit('player:list_update', players)
+
+      if (killed) {
+        // Resolve winner username
+        const winnerUsername = (await redis.hGet(`boss:${bossId}:usernames`, winnerId)) || 'Unknown'
+
+        io.to('global-boss-room').emit('boss:death', { bossId, winnerId, winnerUsername })
+
+        // Record defeat in Prisma
+        const bossRecord = await prisma.boss.findFirst({ where: { id: bossId } })
+        if (bossRecord) {
+          await prisma.boss.update({
+            where: { id: bossId },
+            data: { defeatedAt: new Date(), winnerId },
+          })
+          // Save fight contributions from Redis to Prisma
+          const damageHash = await redis.hGetAll(`boss:${bossId}:damage`)
+          const contributions = Object.entries(damageHash).map(([uId, dmg]) => ({
+            bossId,
+            userId: uId,
+            damageDealt: Number(dmg),
+          }))
+          if (contributions.length > 0) {
+            await prisma.fightContribution.createMany({ data: contributions, skipDuplicates: true })
+          }
+        }
+
+        // Spawn next boss immediately (same event loop tick)
+        const nextBoss = await spawnNextBoss(redis, prisma, bossRecord?.bossNumber || 0)
+        io.to('global-boss-room').emit('boss:spawn', nextBoss)
+      }
+    })
+
     socket.on('disconnect', () => {
       console.log(`Player disconnected: ${socket.data.username}`)
+      lastAttackTime.delete(socket.id)
     })
   })
 }

@@ -137,36 +137,88 @@ describe('Auth routes', () => {
 
   describe('POST /auth/login', () => {
     it('returns 200 with id, username, and killCount for valid credentials', async () => {
-      const passwordHash = '$argon2id$v=19$m=65536,t=3,p=4$fakesalt$fakehash' // mocked
+      // Register first to get a real argon2id hash stored by the route
+      mockPrisma.user.findUnique.mockResolvedValue(null)
+      let capturedHash = ''
+      mockPrisma.user.create.mockImplementation(async ({ data }: { data: { username: string; passwordHash: string } }) => {
+        capturedHash = data.passwordHash
+        return {
+          id: 'login-user-1',
+          username: data.username,
+          passwordHash: data.passwordHash,
+          email: null,
+          killCount: 7,
+          kbRank: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      })
+
+      await app.inject({
+        method: 'POST',
+        url: '/auth/register',
+        payload: { username: 'loginvalid', password: 'password123' }
+      })
+
+      // Now mock findUnique for login using the real captured hash
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: 'user-1',
-        username: 'testuser',
-        passwordHash,
+        id: 'login-user-1',
+        username: 'loginvalid',
+        passwordHash: capturedHash,
         email: null,
-        killCount: 5,
+        killCount: 7,
         kbRank: null,
         createdAt: new Date(),
         updatedAt: new Date()
       })
 
-      // We need to mock argon2.verify to return true
-      // The real argon2 will be used, but since the hash is fake, we mock the module
       const res = await app.inject({
         method: 'POST',
         url: '/auth/login',
-        payload: { username: 'testuser', password: 'password123' }
+        payload: { username: 'loginvalid', password: 'password123' }
       })
 
-      // With fake hash, argon2.verify will return false → 401
-      // We'll test this in integration; for now we just confirm structure
-      expect([200, 401]).toContain(res.statusCode)
+      expect(res.statusCode).toBe(200)
+      const body = JSON.parse(res.body)
+      expect(body).toMatchObject({ id: 'login-user-1', username: 'loginvalid', killCount: 7 })
+
+      // Verify httpOnly cookie is set
+      const setCookieHeader = res.headers['set-cookie']
+      expect(setCookieHeader).toBeDefined()
+      const cookieStr = Array.isArray(setCookieHeader) ? setCookieHeader[0] : setCookieHeader as string
+      expect(cookieStr).toContain('token=')
+      expect(cookieStr.toLowerCase()).toContain('httponly')
+      expect(cookieStr.toLowerCase()).toContain('max-age=2592000')
     })
 
     it('returns 401 with wrong password', async () => {
+      // Register to get a real hash, then try wrong password
+      mockPrisma.user.findUnique.mockResolvedValue(null)
+      let capturedHash = ''
+      mockPrisma.user.create.mockImplementation(async ({ data }: { data: { username: string; passwordHash: string } }) => {
+        capturedHash = data.passwordHash
+        return {
+          id: 'wrong-pw-user',
+          username: data.username,
+          passwordHash: data.passwordHash,
+          email: null,
+          killCount: 0,
+          kbRank: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      })
+
+      await app.inject({
+        method: 'POST',
+        url: '/auth/register',
+        payload: { username: 'wrongpwuser', password: 'password123' }
+      })
+
       mockPrisma.user.findUnique.mockResolvedValue({
-        id: 'user-1',
-        username: 'testuser',
-        passwordHash: '$argon2id$v=19$m=65536,t=3,p=4$fakesalt$fakehash',
+        id: 'wrong-pw-user',
+        username: 'wrongpwuser',
+        passwordHash: capturedHash,
         email: null,
         killCount: 0,
         kbRank: null,
@@ -177,7 +229,7 @@ describe('Auth routes', () => {
       const res = await app.inject({
         method: 'POST',
         url: '/auth/login',
-        payload: { username: 'testuser', password: 'wrongpassword' }
+        payload: { username: 'wrongpwuser', password: 'wrongpassword' }
       })
 
       expect(res.statusCode).toBe(401)
@@ -199,39 +251,23 @@ describe('Auth routes', () => {
       expect(body.error).toBe('Incorrect username or password.')
     })
 
-    it('sets httpOnly cookie named "token" on successful login', async () => {
-      // We register a real user first to get a valid hash
+    it('sets httpOnly cookie on successful login (covered in valid credentials test)', async () => {
+      // Covered by the "valid credentials" test above — this confirms 401 path sets no cookie
       mockPrisma.user.findUnique.mockResolvedValue(null)
-      mockPrisma.user.create.mockResolvedValue({
-        id: 'user-reg-1',
-        username: 'logintest',
-        passwordHash: 'will-be-hashed-by-route',
-        email: null,
-        killCount: 0,
-        kbRank: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })
 
-      // Register to get a real hash
-      await app.inject({
-        method: 'POST',
-        url: '/auth/register',
-        payload: { username: 'logintest', password: 'password123' }
-      })
-
-      // Now login — check cookie structure only (real verify would need real hash)
-      // This test verifies the happy path structure when cookie IS set
-      const body = { error: 'Incorrect username or password.' }
-      // For structural test, verify 401 path sets no cookie
       const res = await app.inject({
         method: 'POST',
         url: '/auth/login',
-        payload: { username: 'nonexistent2', password: 'password123' }
+        payload: { username: 'nonexistent', password: 'password123' }
       })
 
-      mockPrisma.user.findUnique.mockResolvedValue(null)
       expect(res.statusCode).toBe(401)
+      // On failure, no token cookie should be set
+      const setCookieHeader = res.headers['set-cookie']
+      if (setCookieHeader) {
+        const cookieStr = Array.isArray(setCookieHeader) ? setCookieHeader[0] : setCookieHeader as string
+        expect(cookieStr).not.toContain('token=')
+      }
     })
   })
 

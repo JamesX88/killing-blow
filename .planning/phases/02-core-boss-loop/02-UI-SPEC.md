@@ -73,9 +73,9 @@ Source: Profile.tsx and Login.tsx establish `text-xl font-semibold` for headings
 
 **Floating damage number exception:**
 - Size: 20px (`text-xl`)
-- Weight: 700 (`font-bold`)
+- Weight: 600 (`font-semibold`) — visual pop achieved through size (20px) and color (text-yellow-400); extra weight not needed
 - Color: `text-yellow-400` (not part of the 60/30/10 color contract — this is game feedback only)
-- Source: RESEARCH.md Pattern 5 — `className="... text-yellow-400 font-bold text-xl"`
+- Source: RESEARCH.md Pattern 5 — weight normalized to match the 2-weight contract (400, 600)
 
 ---
 
@@ -120,7 +120,7 @@ The `Game.tsx` page uses a two-column layout:
 │  │  HP Text: {hp} / {max}  │   │                      │
 │  └─────────────────────────┘   │                      │
 │  ┌─────────────────────────┐   │                      │
-│  │  [ATTACK] button        │   │                      │
+│  │  [ATTACK BOSS] button   │   │                      │
 │  └─────────────────────────┘   │                      │
 └─────────────────────────────────┴──────────────────────┘
 ```
@@ -130,6 +130,8 @@ The `Game.tsx` page uses a two-column layout:
 - Player sidebar: `w-64 flex-shrink-0`
 - Boss card: `bg-card border-border rounded-lg p-6` (matches Phase 1 card style)
 - Sidebar card: `bg-card border-border rounded-lg p-4`
+
+Primary focal point: the Boss HP bar and attack button — HP bar communicates urgency, attack button is the sole interactive element.
 
 Source: RESEARCH.md architecture diagram + existing Phase 1 card patterns (Login.tsx, Profile.tsx).
 
@@ -204,7 +206,7 @@ No layout-shift animations. No parallax. No scroll-triggered effects.
 
 | Element | Copy | Notes |
 |---------|------|-------|
-| Attack button | "Attack" | Single word, imperative. No icon in Phase 2. |
+| Attack button | "Attack Boss" | Verb + noun, imperative. No icon in Phase 2. |
 | Boss HP display | "{hp} / {maxHp}" | Both values formatted with `formatNumber()` from shared-types |
 | Player sidebar heading | "In the Fight" | 14px, weight 600, zinc-50 |
 | Sidebar player row — damage | "{damage} dmg" | `formatNumber()` applied to damage value |

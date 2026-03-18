@@ -1,8 +1,9 @@
 import { Server, Socket } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import { parse as parseCookie } from 'cookie'
+import { createClient } from 'redis'
 
-export function setupGateway(io: Server) {
+export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>) {
   // JWT middleware — validates token from cookie on WebSocket upgrade
   io.use((socket: Socket, next) => {
     const cookieHeader = socket.handshake.headers.cookie

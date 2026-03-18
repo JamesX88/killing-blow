@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest'
 import { createClient } from 'redis'
-import type { RedisClientType } from 'redis'
 import type { PrismaClient } from '@prisma/client'
 
 // We pass a mock prisma to spawnNextBoss for test isolation
@@ -37,10 +36,10 @@ import {
 
 const REDIS_URL = process.env.REDIS_URL ?? 'redis://localhost:6379'
 
-let redis: RedisClientType
+let redis: ReturnType<typeof createClient>
 
 beforeAll(async () => {
-  redis = createClient({ url: REDIS_URL }) as RedisClientType
+  redis = createClient({ url: REDIS_URL })
   await redis.connect()
 })
 

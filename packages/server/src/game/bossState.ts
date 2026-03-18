@@ -2,8 +2,10 @@ import { readFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import type { PrismaClient } from '@prisma/client'
-import type { RedisClientType } from 'redis'
+import { createClient } from 'redis'
 import type { BossState, ActivePlayer } from '@killing-blow/shared-types'
+
+type RedisClient = ReturnType<typeof createClient>
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const killClaimScript = readFileSync(join(__dirname, 'killClaim.lua'), 'utf8')
@@ -16,7 +18,7 @@ export function getBaseDamage(): number {
 }
 
 export async function applyDamage(
-  redis: RedisClientType,
+  redis: RedisClient,
   bossId: string,
   userId: string,
   damage: number,
@@ -42,7 +44,7 @@ export async function applyDamage(
 }
 
 export async function spawnNextBoss(
-  redis: RedisClientType,
+  redis: RedisClient,
   prisma: PrismaClient,
   prevBossNumber: number
 ): Promise<BossState> {
@@ -71,7 +73,7 @@ export async function spawnNextBoss(
 }
 
 export async function ensureActiveBoss(
-  redis: RedisClientType,
+  redis: RedisClient,
   prisma: PrismaClient
 ): Promise<void> {
   const current = await redis.get('boss:current')
@@ -80,7 +82,7 @@ export async function ensureActiveBoss(
 }
 
 export async function getActivePlayers(
-  redis: RedisClientType,
+  redis: RedisClient,
   bossId: string
 ): Promise<ActivePlayer[]> {
   const damageMap = await redis.hGetAll(`boss:${bossId}:damage`)
@@ -97,12 +99,12 @@ export async function getActivePlayers(
   return players
 }
 
-export async function getCurrentBossId(redis: RedisClientType): Promise<string | null> {
+export async function getCurrentBossId(redis: RedisClient): Promise<string | null> {
   return redis.get('boss:current')
 }
 
 export async function getBossState(
-  redis: RedisClientType,
+  redis: RedisClient,
   bossId: string
 ): Promise<BossState | null> {
   const [hpStr, maxHpStr, metaStr] = await Promise.all([

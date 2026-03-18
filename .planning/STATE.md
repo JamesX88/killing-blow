@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 plans verified
-last_updated: "2026-03-18T13:19:44.131Z"
-last_activity: 2026-03-18 — Roadmap created; 21 v1 requirements mapped across 4 phases
+status: in-progress
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-03-18T13:30:00Z"
+last_activity: 2026-03-18 — Plan 01-01 complete; monorepo scaffold + formatNumber utility
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 20
 ---
 
 # Project State
@@ -26,27 +26,27 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 ## Current Position
 
 Phase: 1 of 4 (Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-18 — Roadmap created; 21 v1 requirements mapped across 4 phases
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-03-18 — Plan 01-01 complete; monorepo scaffold + formatNumber utility
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 7 min
+- Total execution time: 0.1 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| Phase 1 | 1 | 7 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: none yet
+- Last 5 plans: 01-01 (7 min)
 - Trend: -
 
 *Updated after each plan completion*
@@ -61,6 +61,9 @@ Recent decisions affecting current work:
 - [Pre-Phase 1]: Server-authoritative damage pipeline is mandatory before any leaderboard data is written — client sends attack intent only, never damage values
 - [Pre-Phase 1]: Redis required from day one for atomic boss HP (DECRBY + Lua kill-claim); retrofitting after deploy is high-cost
 - [Pre-Phase 1]: break_infinity.js or break_eternity.js must be adopted before any progression math is written
+- [01-01]: Prisma 7 requires prisma.config.ts for datasource URL — url property removed from schema.prisma datasource block
+- [01-01]: pnpm onlyBuiltDependencies in root package.json to allow argon2, esbuild, @prisma/engines native build scripts
+- [01-01]: break_eternity.js adopted as canonical Decimal type — all game numbers must flow through formatNumber
 
 ### Pending Todos
 
@@ -73,6 +76,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T13:19:44.129Z
-Stopped at: Phase 1 plans verified
-Resume file: .planning/phases/01-foundation/01-01-PLAN.md
+Last session: 2026-03-18T13:30:00Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: .planning/phases/01-foundation/01-02-PLAN.md

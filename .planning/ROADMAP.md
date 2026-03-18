@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 5 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Monorepo scaffold, Docker Compose, shared-types with formatNumber
+- [x] 01-01-PLAN.md — Monorepo scaffold, Docker Compose, shared-types with formatNumber
 - [ ] 01-02-PLAN.md — Prisma schema, Fastify app factory, JWT auth, register/login routes
 - [ ] 01-03-PLAN.md — Frontend scaffold with shadcn/ui, Register and Login pages
 - [ ] 01-04-PLAN.md — OAuth2 Google/Discord flows, profile API endpoint
@@ -81,7 +81,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/5 | Planning complete | - |
+| 1. Foundation | 1/5 | In progress | - |
 | 2. Core Boss Loop | 0/TBD | Not started | - |
 | 3. Player Progression | 0/TBD | Not started | - |
 | 4. Competition and Social | 0/TBD | Not started | - |

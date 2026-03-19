@@ -17,7 +17,7 @@
 - [x] **BOSS-01**: All players share a single real-time boss HP bar synced via WebSocket
 - [x] **BOSS-02**: Player sees floating damage numbers for their own hits on the boss
 - [x] **BOSS-03**: Boss plays a death animation then next boss spawns immediately when HP reaches 0
-- [ ] **BOSS-04**: Boss HP scales dynamically with aggregate player DPS so fights last a reasonable duration
+- [x] **BOSS-04**: Boss HP scales dynamically with aggregate player DPS so fights last a reasonable duration
 
 ### Killing Blow
 
@@ -32,7 +32,7 @@
 - [x] **PROG-01**: Player earns gold for every point of damage dealt to the boss
 - [x] **PROG-02**: Player can spend gold on flat stat upgrades (ATK, CRIT, SPD) with exponential cost scaling
 - [x] **PROG-03**: Player auto-attacks at reduced rate while offline; gold calculated server-side on reconnect using server clock only
-- [ ] **PROG-04**: Player receives a DPS multiplier bonus while the browser tab is active
+- [x] **PROG-04**: Player receives a DPS multiplier bonus while the browser tab is active
 
 ### Social & UI
 
@@ -83,7 +83,7 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 | BOSS-01 | Phase 2 | Complete |
 | BOSS-02 | Phase 2 | Complete |
 | BOSS-03 | Phase 2 | Complete |
-| BOSS-04 | Phase 3 | Pending |
+| BOSS-04 | Phase 3 | Complete |
 | KB-01 | Phase 2 | Complete |
 | KB-02 | Phase 4 | Pending |
 | KB-03 | Phase 4 | Pending |
@@ -92,7 +92,7 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 | PROG-01 | Phase 3 | Complete |
 | PROG-02 | Phase 3 | Complete |
 | PROG-03 | Phase 3 | Complete |
-| PROG-04 | Phase 3 | Pending |
+| PROG-04 | Phase 3 | Complete |
 | UI-01 | Phase 2 | Complete |
 | UI-02 | Phase 1 | Complete (01-01) |
 | UI-03 | Phase 4 | Pending |

@@ -66,7 +66,7 @@ Plans:
   3. Player closes the tab for several hours, reopens it, and receives gold calculated from offline time using server-recorded last-seen timestamp (not client clock)
   4. Player with the browser tab focused deals measurably more DPS than the same player's offline rate
   5. Boss HP scales with the aggregate DPS of current active players so fights consistently last a reasonable duration regardless of player count
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [ ] 03-01-PLAN.md — PlayerStats Prisma model, shared event types, playerStats.ts game math with TDD
@@ -94,5 +94,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-18 |
 | 2. Core Boss Loop | 3/4 | In Progress|  |
-| 3. Player Progression | 1/3 | In Progress|  |
+| 3. Player Progression | 2/3 | In Progress|  |
 | 4. Competition and Social | 0/TBD | Not started | - |

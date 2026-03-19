@@ -29,9 +29,9 @@
 
 ### Progression
 
-- [ ] **PROG-01**: Player earns gold for every point of damage dealt to the boss
-- [ ] **PROG-02**: Player can spend gold on flat stat upgrades (ATK, CRIT, SPD) with exponential cost scaling
-- [ ] **PROG-03**: Player auto-attacks at reduced rate while offline; gold calculated server-side on reconnect using server clock only
+- [x] **PROG-01**: Player earns gold for every point of damage dealt to the boss
+- [x] **PROG-02**: Player can spend gold on flat stat upgrades (ATK, CRIT, SPD) with exponential cost scaling
+- [x] **PROG-03**: Player auto-attacks at reduced rate while offline; gold calculated server-side on reconnect using server clock only
 - [ ] **PROG-04**: Player receives a DPS multiplier bonus while the browser tab is active
 
 ### Social & UI
@@ -89,9 +89,9 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 | KB-03 | Phase 4 | Pending |
 | KB-04 | Phase 2 | Complete |
 | KB-05 | Phase 4 | Pending |
-| PROG-01 | Phase 3 | Pending |
-| PROG-02 | Phase 3 | Pending |
-| PROG-03 | Phase 3 | Pending |
+| PROG-01 | Phase 3 | Complete |
+| PROG-02 | Phase 3 | Complete |
+| PROG-03 | Phase 3 | Complete |
 | PROG-04 | Phase 3 | Pending |
 | UI-01 | Phase 2 | Complete |
 | UI-02 | Phase 1 | Complete (01-01) |

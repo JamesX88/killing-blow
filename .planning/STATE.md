@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-boss-loop 02-02-PLAN.md
-last_updated: "2026-03-18T21:09:25.911Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-19T09:43:27.893Z"
 last_activity: 2026-03-18 — Plan 01-01 complete; monorepo scaffold + formatNumber utility
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 9
-  completed_plans: 8
+  total_plans: 12
+  completed_plans: 9
   percent: 20
 ---
 
@@ -57,6 +57,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase 02-core-boss-loop P01 | 6 | 2 tasks | 7 files |
 | Phase 02-core-boss-loop P03 | 4 | 2 tasks | 10 files |
 | Phase 02-core-boss-loop P02 | 9 | 2 tasks | 8 files |
+| Phase 03-player-progression P01 | 7 | 1 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 02-core-boss-loop]: DamageNumbers subscribes directly to socket (not via subscribeToGame) to manage local animation state without polluting global store
 - [Phase Phase 02-02]: ReturnType<typeof createClient> replaces RedisClientType everywhere — bare RedisClientType incompatible with full generic returned by createClient()
 - [Phase Phase 02-02]: boss:damage_dealt emitted via socket.emit() not io.to() — attacker-only delivery confirmed by integration test
+- [Phase 03-player-progression]: break_eternity.js uses default export for Decimal — import Decimal from 'break_eternity.js' not named import
+- [Phase 03-player-progression]: break_eternity.js added as direct dependency to server package (was only in shared-types)
 
 ### Pending Todos
 
@@ -99,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-18T21:09:25.910Z
-Stopped at: Completed 02-core-boss-loop 02-02-PLAN.md
+Last session: 2026-03-19T09:43:27.891Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None

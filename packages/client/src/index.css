@@ -24,6 +24,10 @@
   --input: oklch(0.269 0.006 285.885);
   --ring: oklch(0.497 0.209 27.157);
   --radius: 0.5rem;
+  --hp-bar-glow: 0 0 12px rgba(220, 38, 38, 0.7), 0 0 24px rgba(220, 38, 38, 0.3);
+  --kill-flash-color: rgba(220, 38, 38, 0.25);
+  --dungeon-vignette: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+  --panel-border-glow: 0 0 8px rgba(220, 38, 38, 0.15);
 }
 
 .dark {
@@ -83,4 +87,70 @@
   body {
     @apply bg-background text-foreground font-sans;
   }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes hp-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  @keyframes screen-shake {
+    0%, 100% { transform: translate(0, 0); }
+    20%  { transform: translate(-3px, 2px); }
+    40%  { transform: translate(3px, -2px); }
+    60%  { transform: translate(-2px, 3px); }
+    80%  { transform: translate(2px, -1px); }
+  }
+
+  @keyframes kill-flash {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes boss-flash {
+    0%, 100% { filter: drop-shadow(0 0 16px rgba(220,38,38,0.5)); }
+    50% { filter: drop-shadow(0 0 16px rgba(220,38,38,0.5)) brightness(1.3); }
+  }
+
+  .screen-shake {
+    animation: screen-shake 400ms ease-in-out;
+  }
+
+  .boss-hit-flash {
+    animation: boss-flash 80ms ease-in-out;
+  }
+
+  .hp-bar-low {
+    animation: hp-pulse 800ms ease-in-out infinite;
+  }
+}
+
+.dungeon-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent, transparent 40px,
+      rgba(255,255,255,0.01) 40px,
+      rgba(255,255,255,0.01) 41px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent, transparent 40px,
+      rgba(255,255,255,0.01) 40px,
+      rgba(255,255,255,0.01) 41px
+    ),
+    radial-gradient(ellipse at 50% 30%, #1a0a0a 0%, #0d0d0d 60%, #050505 100%);
+}
+
+.dungeon-vignette-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
 }

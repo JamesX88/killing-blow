@@ -49,7 +49,7 @@ export default function Game() {
     const attackDelay = Math.max(50, Math.floor(1000 / (1.0 + spdLevel * 0.05)))
     const interval = setInterval(() => {
       const boss = useBossStore.getState()
-      if (boss.bossId && !boss.isDefeated && socket.connected) {
+      if (boss.bossId && !boss.isDefeated && socket.connected && !document.hidden) {
         socket.emit('attack:intent', { bossId: boss.bossId })
       }
     }, attackDelay)

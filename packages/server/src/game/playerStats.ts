@@ -44,7 +44,7 @@ export function computeOfflineGold(
   stats: { atkLevel: number; critLevel: number; spdLevel: number },
   offlineSeconds: number
 ): Decimal {
-  if (offlineSeconds < 60) return new Decimal(0)
+  if (offlineSeconds < 30) return new Decimal(0)
   const cappedSeconds = Math.min(offlineSeconds, MAX_OFFLINE_HOURS * 3600)
   const baseDamage = BASE_DAMAGE + stats.atkLevel * 5
   const attackSpeed = BASE_ATTACK_SPEED + stats.spdLevel * 0.05

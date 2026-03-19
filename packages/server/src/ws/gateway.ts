@@ -208,7 +208,7 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
           const now = new Date()
           const offlineSeconds = (now.getTime() - stats.lastSeenAt.getTime()) / 1000
 
-          if (offlineSeconds > 60) {
+          if (offlineSeconds > 30) {
             const offlineGold = computeOfflineGold(stats, offlineSeconds)
             if (offlineGold.gt(0)) {
               await creditGold(prisma, socket.data.userId, offlineGold)

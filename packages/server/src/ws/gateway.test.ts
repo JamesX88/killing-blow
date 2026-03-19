@@ -229,6 +229,34 @@ describe('Boss loop events', () => {
     vi.mocked(prisma.playerStats.upsert).mockResolvedValue({ ...defaultPlayerStats })
     vi.mocked(prisma.playerStats.update).mockResolvedValue({ ...defaultPlayerStats })
 
+    // User mocks — for equippedTitle lookup on attack and killCount/kbBalance increment on kill
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'user-1',
+      username: 'Player1',
+      passwordHash: 'hash',
+      email: null,
+      killCount: 0,
+      kbBalance: 0,
+      kbRank: null,
+      equippedTitle: null,
+      ownedTitles: '[]',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+    vi.mocked(prisma.user.update).mockResolvedValue({
+      id: 'user-1',
+      username: 'Player1',
+      passwordHash: 'hash',
+      email: null,
+      killCount: 1,
+      kbBalance: 1,
+      kbRank: null,
+      equippedTitle: null,
+      ownedTitles: '[]',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
     // creditGold is mocked at module level — reset it to return fixed balance
     vi.mocked(playerStatsMod.creditGold).mockResolvedValue('25')
   })

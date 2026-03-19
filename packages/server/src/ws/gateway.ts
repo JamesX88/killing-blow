@@ -87,6 +87,15 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
       // Store username for player list (outside Lua — not atomic, but fine for display)
       await redis.hSet(`boss:${bossId}:usernames`, userId, username)
 
+      // Store equipped title for player list and boss:death payload
+      const userRecord = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { equippedTitle: true }
+      })
+      if (userRecord?.equippedTitle) {
+        await redis.hSet(`boss:${bossId}:titles`, userId, userRecord.equippedTitle)
+      }
+
       // Get maxHp for threshold calculation
       const maxHpStr = await redis.get(`boss:${bossId}:maxHp`)
       const maxHp = Number(maxHpStr) || 1000
@@ -114,7 +123,37 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
       if (killed) {
         const winnerUsername = (await redis.hGet(`boss:${bossId}:usernames`, winnerId)) || 'Unknown'
 
-        io.to('global-boss-room').emit('boss:death', { bossId, winnerId, winnerUsername })
+        // Atomically increment winner's killCount and kbBalance
+        const updatedWinner = await prisma.user.update({
+          where: { id: winnerId },
+          data: {
+            killCount: { increment: 1 },
+            kbBalance: { increment: 1 },
+          },
+          select: { killCount: true, kbBalance: true, equippedTitle: true }
+        })
+
+        // Build top contributors from Redis (authoritative for current fight)
+        const damageHash = await redis.hGetAll(`boss:${bossId}:damage`)
+        const usernameHash = await redis.hGetAll(`boss:${bossId}:usernames`)
+        const titlesHash = await redis.hGetAll(`boss:${bossId}:titles`)
+        const topContributors = Object.entries(damageHash)
+          .map(([uid, dmg]) => ({
+            username: usernameHash[uid] ?? uid,
+            damageDealt: Number(dmg),
+            title: titlesHash[uid] ?? null,
+          }))
+          .sort((a, b) => b.damageDealt - a.damageDealt)
+          .slice(0, 5)
+
+        io.to('global-boss-room').emit('boss:death', {
+          bossId,
+          winnerId,
+          winnerUsername,
+          winnerTitle: updatedWinner.equippedTitle,
+          winnerKillCount: updatedWinner.killCount,
+          topContributors,
+        })
 
         // Persist defeat best-effort — DB failure must not block spawn
         let prevBossNumber = 0

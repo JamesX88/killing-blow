@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import type { PrismaClient } from '@prisma/client'
 import { createClient } from 'redis'
 import type { BossState, ActivePlayer } from '@killing-blow/shared-types'
+import { getBossLore } from './bossLore.js'
 
 type RedisClient = ReturnType<typeof createClient>
 
@@ -68,7 +69,7 @@ export async function spawnNextBoss(
   overrideMaxHp?: number
 ): Promise<BossState> {
   const bossNumber = prevBossNumber + 1
-  const name = `Boss #${bossNumber}`
+  const { name, lore } = getBossLore(bossNumber)
   const maxHp = Math.round(
     Math.min(MAX_BOSS_HP, Math.max(MIN_BOSS_HP, overrideMaxHp != null && overrideMaxHp > 0 ? overrideMaxHp : BOSS_MAX_HP))
   )
@@ -84,7 +85,7 @@ export async function spawnNextBoss(
   // Set live state keys
   await redis.set(`boss:${bossId}:hp`, String(maxHp))
   await redis.set(`boss:${bossId}:maxHp`, String(maxHp))
-  await redis.set(`boss:${bossId}:meta`, JSON.stringify({ name, bossNumber }))
+  await redis.set(`boss:${bossId}:meta`, JSON.stringify({ name, lore, bossNumber }))
   await redis.set('boss:current', bossId)
 
   // Set expiry on all fight keys (24h)
@@ -92,7 +93,7 @@ export async function spawnNextBoss(
   await redis.expire(`boss:${bossId}:maxHp`, 86400)
   await redis.expire(`boss:${bossId}:meta`, 86400)
 
-  return { bossId, name, hp: maxHp, maxHp, bossNumber }
+  return { bossId, name, lore, hp: maxHp, maxHp, bossNumber }
 }
 
 export async function ensureActiveBoss(
@@ -117,11 +118,13 @@ export async function getActivePlayers(
 ): Promise<ActivePlayer[]> {
   const damageMap = await redis.hGetAll(`boss:${bossId}:damage`)
   const usernameMap = await redis.hGetAll(`boss:${bossId}:usernames`)
+  const titlesMap = await redis.hGetAll(`boss:${bossId}:titles`)
 
   const players: ActivePlayer[] = Object.entries(damageMap).map(([userId, dmgStr]) => ({
     userId,
     username: usernameMap[userId] ?? userId,
     damageDealt: Number(dmgStr),
+    equippedTitle: titlesMap[userId] ?? null,
   }))
 
   players.sort((a, b) => b.damageDealt - a.damageDealt)
@@ -145,11 +148,12 @@ export async function getBossState(
 
   if (hpStr === null || maxHpStr === null || metaStr === null) return null
 
-  const meta = JSON.parse(metaStr) as { name: string; bossNumber: number }
+  const meta = JSON.parse(metaStr) as { name: string; lore?: string; bossNumber: number }
 
   return {
     bossId,
     name: meta.name,
+    lore: meta.lore,
     hp: Number(hpStr),
     maxHp: Number(maxHpStr),
     bossNumber: meta.bossNumber,

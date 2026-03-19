@@ -119,8 +119,8 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
           console.error('Failed to persist boss defeat (spawn will still proceed):', err)
         }
 
-        // Wait for death animation on client before spawning next boss
-        await new Promise(resolve => setTimeout(resolve, 500))
+        // Wait for death animation + kill recognition before spawning next boss
+        await new Promise(resolve => setTimeout(resolve, 3000))
 
         try {
           const nextBoss = await spawnNextBoss(redis, prisma, prevBossNumber)

@@ -56,10 +56,11 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
     socket.on('attack:intent', async ({ bossId }: { bossId: string }) => {
       if (!redis) return
 
-      // Quick DoS floor before any DB lookups
+      // DoS floor — max 20 attacks/second per socket
       const now = Date.now()
       const last = lastAttackTime.get(socket.id) || 0
       if (now - last < 50) return
+      lastAttackTime.set(socket.id, now)
 
       // Validate bossId matches current boss — discard stale intents silently
       const currentBossId = await getCurrentBossId(redis)
@@ -76,10 +77,6 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
       })
 
       const damageResult = getPlayerDamage(playerStats)
-
-      // Player-specific rate limit based on SPD stat
-      if (now - last < damageResult.attackDelay) return
-      lastAttackTime.set(socket.id, now)
 
       // Check active bonus via Redis heartbeat key
       const isActive = await redis.exists(`player:${userId}:heartbeat`)

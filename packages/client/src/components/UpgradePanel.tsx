@@ -7,8 +7,16 @@ import { Button } from './ui/button.js'
 const STAT_CONFIG = {
   atk: { label: 'ATK', subtext: 'Flat damage per hit' },
   crit: { label: 'CRIT', subtext: 'Critical hit chance' },
-  spd: { label: 'SPD', subtext: 'Attacks per second' },
+  spd: { label: 'SPD', subtext: 'Auto-attack speed' },
 } as const
+
+function statValue(stat: StatKey, level: number): string {
+  switch (stat) {
+    case 'atk': return `${25 + level * 5} dmg/hit`
+    case 'crit': return `${Math.min(5 + level * 2, 80)}% crit chance`
+    case 'spd': return `${(1.0 + level * 0.05).toFixed(2)} atk/s`
+  }
+}
 
 type StatKey = keyof typeof STAT_CONFIG
 
@@ -132,6 +140,7 @@ export function UpgradePanel() {
                   </div>
                 </div>
                 <p className="text-[14px] text-muted-foreground leading-[1.5]">{config.subtext}</p>
+                <p className="text-[13px] text-zinc-400 font-mono leading-[1.5]">{statValue(stat, level)}</p>
                 <div className="flex items-center gap-2">
                   <Button
                     onClick={() => handleUpgrade(stat)}

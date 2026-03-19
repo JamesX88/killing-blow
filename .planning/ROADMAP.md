@@ -66,7 +66,12 @@ Plans:
   3. Player closes the tab for several hours, reopens it, and receives gold calculated from offline time using server-recorded last-seen timestamp (not client clock)
   4. Player with the browser tab focused deals measurably more DPS than the same player's offline rate
   5. Boss HP scales with the aggregate DPS of current active players so fights consistently last a reasonable duration regardless of player count
-**Plans**: TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — PlayerStats Prisma model, shared event types, playerStats.ts game math with TDD
+- [ ] 03-02-PLAN.md — Upgrade REST route, gateway gold/heartbeat/offline extensions, dynamic boss HP scaling
+- [ ] 03-03-PLAN.md — Client progression store, UpgradePanel, OfflineRewardToast, Game.tsx integration
 
 ### Phase 4: Competition and Social
 **Goal**: The killing blow moment feels like an event, veteran players have a persistent leaderboard identity, and players can spend KB Currency on cosmetic titles and see boss lore during each fight
@@ -89,5 +94,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-18 |
 | 2. Core Boss Loop | 3/4 | In Progress|  |
-| 3. Player Progression | 0/TBD | Not started | - |
+| 3. Player Progression | 0/3 | Not started | - |
 | 4. Competition and Social | 0/TBD | Not started | - |

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useProgressionStore } from '../stores/progressionStore.js'
 import { formatNumber, Decimal } from '@killing-blow/shared-types'
-import { Card, CardHeader, CardContent } from './ui/card.js'
 import { Button } from './ui/button.js'
 
 const STAT_CONFIG = {
@@ -94,15 +93,18 @@ export function UpgradePanel() {
   const hasNoProgress = goldDecimal.eq(0) && atkLevel === 0 && critLevel === 0 && spdLevel === 0 && !costs
 
   return (
-    <Card className="flex-shrink-0 w-64">
-      <CardHeader className="pb-2">
-        <h2 className="text-[20px] font-semibold leading-[1.2]">Upgrades</h2>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div
+      className="flex-shrink-0 w-64 bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg"
+      style={{ boxShadow: 'var(--panel-border-glow)' }}
+    >
+      <div className="p-4 pb-2">
+        <h2 className="text-[20px] font-bold leading-[1.2]">Upgrades</h2>
+      </div>
+      <div className="px-4 pb-4 space-y-4">
         {/* Gold Display */}
         <div>
           <p className="text-[16px] text-muted-foreground leading-[1.5]">Gold</p>
-          <p className="text-[28px] font-semibold text-yellow-400 leading-[1.1]" aria-live="polite">
+          <p className="text-[28px] font-bold text-yellow-400 leading-[1.1]" aria-live="polite">
             {goldFormatted}
           </p>
         </div>
@@ -119,7 +121,7 @@ export function UpgradePanel() {
 
         {hasNoProgress ? (
           <div>
-            <p className="text-[16px] font-semibold text-zinc-50 leading-[1.5]">Attack to earn gold</p>
+            <p className="text-[16px] font-bold text-zinc-50 leading-[1.5]">Attack to earn gold</p>
             <p className="text-[14px] text-muted-foreground leading-[1.5]">Every hit earns gold. Spend gold to grow stronger.</p>
           </div>
         ) : (
@@ -135,7 +137,7 @@ export function UpgradePanel() {
               <div key={stat} className="space-y-1">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[16px] font-semibold text-zinc-50">{config.label}</span>
+                    <span className="text-[16px] font-bold text-zinc-50">{config.label}</span>
                     <span className="text-[14px] text-muted-foreground ml-2">Lv. {level}</span>
                   </div>
                 </div>
@@ -166,7 +168,7 @@ export function UpgradePanel() {
         {error && (
           <p className="text-[14px] text-destructive">{error}</p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

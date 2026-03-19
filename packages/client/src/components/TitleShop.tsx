@@ -79,13 +79,16 @@ export function TitleShop() {
 
   return (
     <div className="w-72 flex-shrink-0">
-      <div className="bg-card border border-border rounded-lg p-4">
-        <h2 className="text-base font-semibold text-foreground mb-3">Titles</h2>
+      <div
+        className="bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg p-4"
+        style={{ boxShadow: 'var(--panel-border-glow)' }}
+      >
+        <h2 className="text-base font-bold text-foreground mb-3">Titles</h2>
 
         {/* KB Balance — primary visual focal point */}
         <div className="text-center mb-4">
           <p className="text-sm text-muted-foreground mb-1">KB</p>
-          <p className="text-[28px] font-semibold text-foreground leading-[1.1]">{kbBalance}</p>
+          <p className="text-[28px] font-bold text-foreground leading-[1.1]">{kbBalance}</p>
         </div>
 
         {error && (

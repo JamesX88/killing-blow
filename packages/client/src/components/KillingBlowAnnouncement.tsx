@@ -10,30 +10,33 @@ export function KillingBlowAnnouncement() {
     <AnimatePresence>
       {active && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.2 }}
+          exit={{ opacity: 0, scale: 0.5 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="kb-announcement-title"
           className="fixed inset-0 z-50 flex items-center justify-center"
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/70" />
+          <div className="absolute inset-0 bg-black/80" />
 
           {/* Content */}
-          <div className="relative bg-card border border-border rounded-lg p-8 shadow-xl w-96 flex flex-col items-center gap-4 text-center">
+          <div
+            className="relative bg-black/80 border border-white/10 rounded-lg p-8 shadow-xl w-96 flex flex-col items-center gap-4 text-center"
+            style={{ boxShadow: '0 0 40px rgba(220,38,38,0.4)' }}
+          >
             {/* Headline */}
             <h2
               id="kb-announcement-title"
-              className="text-[28px] font-semibold text-foreground leading-[1.1]"
+              className="text-[28px] font-bold text-foreground leading-[1.1]"
             >
               Killing Blow!
             </h2>
 
             {/* Winner name — primary accent */}
-            <p className="text-[20px] font-semibold text-primary leading-[1.2]">
+            <p className="text-[28px] font-bold text-primary leading-[1.2]">
               {winnerUsername} dealt the final blow
             </p>
 
@@ -43,14 +46,14 @@ export function KillingBlowAnnouncement() {
             )}
 
             {/* Kill count */}
-            <p className="text-[28px] font-semibold text-foreground leading-[1.1]">
+            <p className="text-[28px] font-bold text-foreground leading-[1.1]">
               Kill #{winnerKillCount}
             </p>
 
             {/* Top Contributors — PostFightScreen embedded */}
             {topContributors.length > 0 && (
               <div className="w-full mt-4 border-t border-border pt-4">
-                <h3 className="text-[16px] font-semibold text-foreground mb-3">Top Contributors</h3>
+                <h3 className="text-[16px] font-bold text-foreground mb-3">Top Contributors</h3>
                 <ul className="space-y-2">
                   {topContributors.map((c, i) => (
                     <li key={c.username} className="flex items-center justify-between text-[14px]">
@@ -61,7 +64,7 @@ export function KillingBlowAnnouncement() {
                           <span className="text-muted-foreground">[{c.title}]</span>
                         )}
                       </div>
-                      <span className="font-semibold text-foreground">
+                      <span className="font-bold text-foreground">
                         {formatNumber(new Decimal(c.damageDealt))} dmg
                       </span>
                     </li>

@@ -35,7 +35,7 @@ export function Leaderboard() {
 
   return (
     <div className="min-h-screen p-8 max-w-2xl mx-auto">
-      <h1 className="text-xl font-semibold text-foreground mb-6">Killing Blow Leaderboard</h1>
+      <h1 className="text-xl font-bold text-foreground mb-6">Killing Blow Leaderboard</h1>
 
       {error && (
         <p className="text-sm text-destructive mb-4">{error}</p>
@@ -43,15 +43,18 @@ export function Leaderboard() {
 
       {!error && users.length === 0 && (
         <div className="text-center py-16">
-          <h2 className="text-base font-semibold text-foreground mb-2">No kills yet</h2>
+          <h2 className="text-base font-bold text-foreground mb-2">No kills yet</h2>
           <p className="text-sm text-muted-foreground">Be the first to land the killing blow.</p>
         </div>
       )}
 
       {users.length > 0 && (
-        <>
+        <div
+          className="bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg p-4"
+          style={{ boxShadow: 'var(--panel-border-glow)' }}
+        >
           {/* Column headers */}
-          <div className="grid grid-cols-[3rem_1fr_8rem_4rem] gap-2 px-4 py-2 text-sm font-semibold text-muted-foreground border-b border-border">
+          <div className="grid grid-cols-[3rem_1fr_8rem_4rem] gap-2 px-4 py-2 text-sm font-bold text-muted-foreground border-b border-white/10">
             <span>Rank</span>
             <span>Player</span>
             <span>Title</span>
@@ -67,20 +70,20 @@ export function Leaderboard() {
               return (
                 <li
                   key={user.id}
-                  className={`grid grid-cols-[3rem_1fr_8rem_4rem] gap-2 px-4 py-3 text-sm border-b border-border ${
+                  className={`grid grid-cols-[3rem_1fr_8rem_4rem] gap-2 px-4 py-3 text-sm border-b border-white/10 ${
                     isCurrentUser ? 'bg-primary/10' : ''
                   }`}
                 >
-                  <span className={`font-mono ${isFirst ? 'text-yellow-400 font-semibold' : 'text-muted-foreground'}`}>
+                  <span className={`font-mono ${isFirst ? 'text-yellow-400 font-bold' : 'text-muted-foreground'}`}>
                     {rank}
                   </span>
-                  <span className={`truncate ${isFirst ? 'text-yellow-400 font-semibold' : 'text-foreground'}`}>
+                  <span className={`truncate ${isFirst ? 'text-yellow-400 font-bold' : 'text-foreground'}`}>
                     {user.username}
                   </span>
                   <span className="text-muted-foreground truncate">
                     {user.equippedTitle ? `[${user.equippedTitle}]` : ''}
                   </span>
-                  <span className="text-right font-semibold text-foreground font-mono">
+                  <span className="text-right font-bold text-foreground font-mono">
                     {user.killCount}
                   </span>
                 </li>
@@ -112,7 +115,7 @@ export function Leaderboard() {
               </Button>
             </div>
           )}
-        </>
+        </div>
       )}
 
       {/* Back to game link */}

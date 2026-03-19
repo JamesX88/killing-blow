@@ -26,6 +26,7 @@ export default function Game() {
 
   const [killFlashActive, setKillFlashActive] = useState(false)
   const [drawerTab, setDrawerTab] = useState<'upgrades' | 'titles' | null>(null)
+  const [sidebarTab, setSidebarTab] = useState<'upgrades' | 'titles' | 'players'>('upgrades')
   const contentRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
 
@@ -192,11 +193,43 @@ export default function Game() {
             </Button>
           </div>
 
-          {/* Desktop right sidebar -- hidden on mobile */}
-          <div className="hidden lg:flex flex-col gap-4 w-72 p-4 overflow-y-auto">
-            <UpgradePanel />
-            <TitleShop />
-            <PlayerSidebar players={activePlayers} />
+          {/* Desktop right sidebar -- tabbed, hidden on mobile */}
+          <div className="hidden lg:flex flex-col w-72 p-4 gap-3">
+            {/* Tab strip */}
+            <div
+              className="flex bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg overflow-hidden flex-shrink-0"
+              style={{ boxShadow: 'var(--panel-border-glow)' }}
+            >
+              {(['upgrades', 'titles', 'players'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSidebarTab(tab)}
+                  className={`flex-1 py-2.5 text-[12px] font-bold capitalize transition-colors ${
+                    sidebarTab === tab
+                      ? 'bg-white/10 text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tab === 'players' ? `Players (${activePlayers.length})` : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </div>
+            {/* Active panel -- fades between tabs */}
+            <div className="flex-1 overflow-y-auto">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={sidebarTab}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  {sidebarTab === 'upgrades' && <UpgradePanel />}
+                  {sidebarTab === 'titles' && <TitleShop />}
+                  {sidebarTab === 'players' && <PlayerSidebar players={activePlayers} />}
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 

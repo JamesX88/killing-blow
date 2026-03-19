@@ -52,13 +52,14 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
-| Body | 14px | 400 (regular) | 1.5 | Descriptions, labels, sidebar player names, lore text |
+| Body | 14px | 400 (regular) | 1.5 | Descriptions, labels, sidebar player names, lore text, badges, mono stat readouts |
 | Label | 16px | 600 (semibold) | 1.5 | Stat names, section subheadings, gold balance label |
 | Heading | 20px | 600 (semibold) | 1.2 | Panel headings (e.g. "Upgrades"), boss name on lore card |
 | Display | 28px | 600 (semibold) | 1.1 | Numeric values (HP, damage), KB Currency balance |
 
-Additional in-use size (mono role):
-- 13px, weight 400, line-height 1.5, font-mono — stat value readouts (e.g. "125 dmg/hit"). Use for numeric stat values in leaderboard rank column.
+Declared scale: 14px, 16px, 20px, 28px — exactly 4 sizes.
+
+Mono usage: numeric stat readouts (e.g. "125 dmg/hit", leaderboard rank column) use 14px, weight 400, line-height 1.5, font-mono. This is the Body role with font-mono applied — it does not constitute an additional size.
 
 Sources: UpgradePanel.tsx, BossHpBar.tsx, OfflineRewardToast.tsx (direct codebase inspection)
 
@@ -117,7 +118,7 @@ New components required for Phase 4 (follow established patterns):
 - **Enter animation:** `opacity: 0 → 1`, `scale: 0.8 → 1`, spring or 200ms ease-out
 - **Exit animation:** `opacity: 1 → 0`, `scale: 1 → 0.8`, 150ms ease-in
 - **Winner name color:** `--primary` (red-600) — the one accent use case for this component
-- **Title display:** render winner's title (if any) as a muted badge above/below the name at 14px
+- **Title display:** render winner's title (if any) as a muted badge above/below the name at 14px muted-foreground
 - **Kill count:** display updated kill count as "Kill #N" in display (28px semibold)
 - **Accessibility:** `role="dialog"`, `aria-modal="true"`, `aria-labelledby` pointing to winner heading
 
@@ -127,7 +128,7 @@ New components required for Phase 4 (follow established patterns):
 - **Dismiss:** `boss:spawn` (auto), same lifecycle as KBA
 - **Layout:** top-5 contributors list — username, damage dealt (formatted), optional title badge
 - **Implementation choice:** embed as a section within KillingBlowAnnouncement below winner display (single overlay, not two stacked overlays)
-- **Row format:** rank number (13px mono), username (14px regular), damage (14px semibold), title badge (12px muted)
+- **Row format:** rank number (14px mono), username (14px regular), damage (14px semibold), title badge (14px muted-foreground)
 
 ### Leaderboard (KB-03)
 
@@ -136,12 +137,14 @@ New components required for Phase 4 (follow established patterns):
 - **Pagination:** page/limit — show 20 rows per page
 - **Rank column:** derived from `(page - 1) * limit + rowIndex + 1` — do NOT use stored `kbRank` column
 - **Highlight current user:** row background `bg-primary/10` for the authenticated user's row
+- **Primary visual focal point:** rank #1 row — rendered with a gold highlight (`text-yellow-400` on rank number and username) to serve as the primary visual anchor for the screen
 - **Empty state:** "No kills recorded yet. Be the first to land the killing blow."
 
 ### Title Shop (UI-03)
 
-- **Layout:** list of 5 title cards, each showing: title label, cost in KB Currency, "Owned" badge if purchased, "Equip" / "Equipped" button state
-- **Purchase flow:** single click → POST `/titles/:id/purchase` → success: button changes to "Equip" immediately (optimistic state update via store)
+- **Layout:** list of 5 title cards, each showing: title label, cost in KB Currency, "Owned" badge if purchased, "Equip Title" / "Equipped" button state
+- **Primary visual focal point:** KB balance display at the top of the TitleShop panel — rendered at 28px display size to anchor the screen and inform purchase decisions
+- **Purchase flow:** single click → POST `/titles/:id/purchase` → success: button changes to "Equip Title" immediately (optimistic state update via store)
 - **Equip flow:** single click → PATCH `/titles/:id/equip` → button shows "Equipped" (active state)
 - **Insufficient KB Currency:** button disabled + `"Not enough KB"` label at 14px muted-foreground (same pattern as UpgradePanel insufficient gold)
 - **No destructive actions in title shop** — purchases are permanent, equip is reversible
@@ -154,7 +157,7 @@ New components required for Phase 4 (follow established patterns):
 
 ### Player Title Badge (sidebar + leaderboard)
 
-- **Rendering:** inline `<span>` after username, text 12px, color `text-muted-foreground`, no background color
+- **Rendering:** inline `<span>` after username, 14px, color `text-muted-foreground`, no background color
 - **Example:** `Gorvax the Slayer [Annihilator]` where `[Annihilator]` is the badge span
 - **Truncation:** username truncates before badge if space is constrained (`truncate` class on username span only)
 
@@ -166,7 +169,7 @@ New components required for Phase 4 (follow established patterns):
 |---------|------|
 | Primary CTA — Leaderboard nav | "Leaderboard" (noun label, nav link) |
 | Primary CTA — Title Shop | "Buy Title" (verb + noun on purchase button) |
-| Primary CTA — Equip title | "Equip" (single verb, button label) |
+| Primary CTA — Equip title | "Equip Title" (verb + noun, button label) |
 | Active equipped state | "Equipped" (past tense, disabled button label) |
 | Killing blow announcement headline | "Killing Blow!" |
 | Killing blow winner line | "{username} dealt the final blow" |
@@ -179,7 +182,7 @@ New components required for Phase 4 (follow established patterns):
 | Leaderboard empty state body | "Be the first to land the killing blow." |
 | Title shop heading | "Titles" |
 | Title shop empty KB state | "Not enough KB" (inline, 14px, muted-foreground) |
-| Title shop owned badge | "Owned" (12px, green-400 or muted, inline badge) |
+| Title shop owned badge | "Owned" (14px, green-400 or muted, inline badge) |
 | Title shop insufficient balance — upgrade nudge | "Earn KB by landing killing blows." (14px, muted) |
 | Player sidebar — title display | "{username} · {title}" or "{username}" if no title |
 | Error — purchase failed (server error) | "Purchase failed. Try again." (14px, destructive color) |

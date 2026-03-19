@@ -17,8 +17,14 @@ export default defineConfig({
       '/auth': 'http://localhost:3000',
       '/boss': 'http://localhost:3000',
       '/upgrades': 'http://localhost:3000',
-      '/leaderboard': 'http://localhost:3000',
-      '/titles': 'http://localhost:3000',
+      '/leaderboard': {
+        target: 'http://localhost:3000',
+        bypass: (req) => req.headers.accept?.includes('text/html') ? '/index.html' : undefined,
+      },
+      '/titles': {
+        target: 'http://localhost:3000',
+        bypass: (req) => req.headers.accept?.includes('text/html') ? '/index.html' : undefined,
+      },
       '^/profile/.+': 'http://localhost:3000',
       '/socket.io': {
         target: 'http://localhost:3000',

@@ -29,7 +29,7 @@ export default function App() {
   if (isLoading) return null
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50 font-sans">
+    <div className="text-zinc-50 font-sans">
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />

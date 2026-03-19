@@ -19,6 +19,7 @@ model User {
 
   oauthAccounts OAuthAccount[]
   contributions FightContribution[]
+  stats         PlayerStats?
 }
 
 model OAuthAccount {
@@ -56,4 +57,19 @@ model FightContribution {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([bossId, userId])
+}
+
+model PlayerStats {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  goldBalance  String   @default("0")
+  atkLevel     Int      @default(0)
+  critLevel    Int      @default(0)
+  spdLevel     Int      @default(0)
+  lastSeenAt   DateTime @default(now())
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

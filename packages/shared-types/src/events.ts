@@ -18,8 +18,12 @@ export interface ServerToClientEvents {
   'boss:death': (payload: { bossId: string; winnerId: string; winnerUsername: string }) => void
   'boss:spawn': (payload: BossState) => void
   'player:list_update': (payload: ActivePlayer[]) => void
+  'player:gold_update': (payload: { goldBalance: string; goldEarned: string }) => void
+  'player:stats_update': (payload: { atkLevel: number; critLevel: number; spdLevel: number; goldBalance: string }) => void
+  'player:offline_reward': (payload: { goldEarned: string; offlineSeconds: number }) => void
 }
 
 export interface ClientToServerEvents {
   'attack:intent': (payload: { bossId: string }) => void
+  'player:heartbeat': () => void
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { Decimal } from 'break_eternity.js'
+import Decimal from 'break_eternity.js'
 
 import {
   getPlayerDamage,

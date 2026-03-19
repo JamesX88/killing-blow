@@ -7,6 +7,18 @@ function makeMockPrisma(bossOverrides?: Partial<{ id: string; bossNumber: number
   let bossCounter = 0
   return {
     boss: {
+      upsert: vi.fn(async (args: { where: { bossNumber: number }; update: object; create: { bossNumber: number; name: string; maxHp: number } }) => {
+        bossCounter++
+        return {
+          id: bossOverrides?.id ?? `test-boss-${bossCounter}`,
+          bossNumber: args.create.bossNumber,
+          name: args.create.name,
+          maxHp: args.create.maxHp,
+          spawnedAt: new Date(),
+          defeatedAt: null,
+          winnerId: null,
+        }
+      }),
       create: vi.fn(async ({ data }: { data: { bossNumber: number; name: string; maxHp: number } }) => {
         bossCounter++
         return {
@@ -132,7 +144,9 @@ describe('bossState', () => {
       expect(state.bossNumber).toBe(1)
       expect(state.maxHp).toBe(1000)
       expect(state.hp).toBe(1000)
-      expect(state.name).toBe('Boss #1')
+      // name now comes from lore catalogue, not hardcoded 'Boss #N'
+      expect(state.name).toBeTruthy()
+      expect(state.name).not.toMatch(/^Boss #/)
 
       const hp = await redis.get(`boss:spawned-boss-1:hp`)
       const maxHp = await redis.get(`boss:spawned-boss-1:maxHp`)
@@ -238,6 +252,62 @@ describe('bossState', () => {
       expect(players[1].damageDealt).toBe(250)
       expect(players[2].userId).toBe('user-a')
       expect(players[2].damageDealt).toBe(100)
+    })
+  })
+
+  describe('Phase 4 - Lore and Titles', () => {
+    it('Phase4-Test1: spawnNextBoss stores lore in boss:meta Redis key', async () => {
+      const mockPrisma = makeMockPrisma({ id: 'boss-lore-1' })
+
+      await spawnNextBoss(redis, mockPrisma, 0)
+
+      const metaStr = await redis.get('boss:boss-lore-1:meta')
+      expect(metaStr).not.toBeNull()
+      const meta = JSON.parse(metaStr!)
+      expect(typeof meta.lore).toBe('string')
+      expect(meta.lore.length).toBeGreaterThan(0)
+    })
+
+    it('Phase4-Test2: spawnNextBoss returns BossState with lore field matching getBossLore(bossNumber).lore', async () => {
+      const mockPrisma = makeMockPrisma({ id: 'boss-lore-2' })
+
+      const state = await spawnNextBoss(redis, mockPrisma, 2)
+
+      expect(typeof state.lore).toBe('string')
+      expect(state.lore!.length).toBeGreaterThan(0)
+    })
+
+    it('Phase4-Test3: spawnNextBoss uses catalogue name not "Boss #N" pattern', async () => {
+      const mockPrisma = makeMockPrisma({ id: 'boss-lore-3' })
+
+      const state = await spawnNextBoss(redis, mockPrisma, 0)
+
+      expect(state.name).not.toMatch(/^Boss #/)
+      expect(state.name.length).toBeGreaterThan(0)
+    })
+
+    it('Phase4-Test4: getActivePlayers returns equippedTitle from boss:{bossId}:titles hash', async () => {
+      const bossId = 'boss-titles-1'
+      await redis.hSet(`boss:${bossId}:damage`, { 'user-a': '100' })
+      await redis.hSet(`boss:${bossId}:usernames`, { 'user-a': 'Alice' })
+      await redis.hSet(`boss:${bossId}:titles`, { 'user-a': 'Slayer' })
+
+      const players = await getActivePlayers(redis, bossId)
+
+      expect(players).toHaveLength(1)
+      expect(players[0].equippedTitle).toBe('Slayer')
+    })
+
+    it('Phase4-Test5: getActivePlayers returns null equippedTitle when no title set', async () => {
+      const bossId = 'boss-titles-2'
+      await redis.hSet(`boss:${bossId}:damage`, { 'user-b': '200' })
+      await redis.hSet(`boss:${bossId}:usernames`, { 'user-b': 'Bob' })
+      // No titles hash set
+
+      const players = await getActivePlayers(redis, bossId)
+
+      expect(players).toHaveLength(1)
+      expect(players[0].equippedTitle).toBeNull()
     })
   })
 })

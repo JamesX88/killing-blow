@@ -5,7 +5,8 @@ vi.mock('../db/prisma.js', () => ({
   prisma: {
     user: {
       findUnique: vi.fn(),
-      create: vi.fn()
+      create: vi.fn(),
+      update: vi.fn(),
     },
     boss: {
       findFirst: vi.fn(),
@@ -450,5 +451,209 @@ describe('Boss loop events', () => {
         update: expect.objectContaining({ lastSeenAt: expect.any(Date) }),
       })
     )
+  })
+})
+
+describe('Phase 4 — KB Currency and Announcement', () => {
+  let app: FastifyInstance
+  let io: SocketIOServer
+  let redis: ReturnType<typeof createClient>
+  let testBossId: string
+
+  const TEST_PORT_PHASE4 = 3097
+
+  beforeAll(async () => {
+    redis = createClient({ url: REDIS_URL })
+    await redis.connect()
+
+    app = await buildApp({ logger: false })
+    await app.ready()
+
+    io = new SocketIOServer(app.server, {
+      cors: { origin: '*', credentials: true }
+    })
+    setupGateway(io, redis)
+
+    await new Promise<void>((resolve) => {
+      app.server.listen(TEST_PORT_PHASE4, '127.0.0.1', () => resolve())
+    })
+  })
+
+  afterAll(async () => {
+    io.close()
+    await app.close()
+    await redis.quit()
+  })
+
+  beforeEach(async () => {
+    await redis.flushDb()
+    testBossId = 'test-boss-p4'
+    await redis.set(`boss:${testBossId}:hp`, '1000')
+    await redis.set(`boss:${testBossId}:maxHp`, '1000')
+    await redis.set(`boss:${testBossId}:meta`, JSON.stringify({ name: 'Boss #10', bossNumber: 10 }))
+    await redis.set('boss:current', testBossId)
+
+    // Reset prisma mocks
+    const { prisma } = await import('../db/prisma.js')
+    vi.mocked(prisma.boss.findFirst).mockResolvedValue({
+      id: testBossId,
+      bossNumber: 10,
+      name: 'Boss #10',
+      maxHp: 1000,
+      spawnedAt: new Date(),
+      defeatedAt: null,
+      winnerId: null
+    })
+    vi.mocked(prisma.boss.update).mockResolvedValue({
+      id: testBossId,
+      bossNumber: 10,
+      name: 'Boss #10',
+      maxHp: 1000,
+      spawnedAt: new Date(),
+      defeatedAt: new Date(),
+      winnerId: 'user-1'
+    })
+    vi.mocked(prisma.boss.create).mockImplementation(async ({ data }: { data: { bossNumber: number; name: string; maxHp: number } }) => ({
+      id: 'new-boss-p4-next',
+      bossNumber: data.bossNumber,
+      name: data.name,
+      maxHp: data.maxHp,
+      spawnedAt: new Date(),
+      defeatedAt: null,
+      winnerId: null
+    }))
+    vi.mocked(prisma.fightContribution.createMany).mockResolvedValue({ count: 0 })
+    vi.mocked(prisma.playerStats.upsert).mockResolvedValue({ ...defaultPlayerStats })
+    vi.mocked(prisma.playerStats.update).mockResolvedValue({ ...defaultPlayerStats })
+
+    // Mock user.findUnique for equippedTitle lookup and user.update for kill flow
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'user-1',
+      username: 'Player1',
+      passwordHash: 'hash',
+      email: null,
+      killCount: 5,
+      kbBalance: 3,
+      kbRank: null,
+      equippedTitle: 'slayer',
+      ownedTitles: '["slayer"]',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
+    vi.mocked(prisma.user.update).mockResolvedValue({
+      id: 'user-1',
+      username: 'Player1',
+      passwordHash: 'hash',
+      email: null,
+      killCount: 6,
+      kbBalance: 4,
+      kbRank: null,
+      equippedTitle: 'slayer',
+      ownedTitles: '["slayer"]',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
+    vi.mocked(playerStatsMod.creditGold).mockResolvedValue('25')
+  })
+
+  it('Phase 4 Test 1: boss:death payload includes winnerTitle, winnerKillCount, and topContributors', async () => {
+    // Set HP to 1 so one attack kills it
+    await redis.set(`boss:${testBossId}:hp`, '1')
+    await redis.hSet(`boss:${testBossId}:usernames`, 'user-1', 'Player1')
+    await redis.hSet(`boss:${testBossId}:damage`, 'user-1', '999')
+
+    const token = makeToken({ userId: 'user-1', username: 'Player1' })
+    const socket = await connectSocket(TEST_PORT_PHASE4, { cookie: `token=${token}` })
+
+    const deathPromise = waitForEvent<{
+      bossId: string
+      winnerId: string
+      winnerUsername: string
+      winnerTitle: string | null
+      winnerKillCount: number
+      topContributors: Array<{ username: string; damageDealt: number; title: string | null }>
+    }>(socket, 'boss:death')
+    socket.emit('attack:intent', { bossId: testBossId })
+
+    const payload = await deathPromise
+    expect(payload.bossId).toBe(testBossId)
+    expect(payload.winnerId).toBe('user-1')
+    expect(payload.winnerUsername).toBe('Player1')
+    expect(payload).toHaveProperty('winnerTitle')
+    expect(payload).toHaveProperty('winnerKillCount')
+    expect(payload).toHaveProperty('topContributors')
+    expect(Array.isArray(payload.topContributors)).toBe(true)
+
+    socket.disconnect()
+  })
+
+  it('Phase 4 Test 2: winner killCount and kbBalance increment atomically on boss death', async () => {
+    await redis.set(`boss:${testBossId}:hp`, '1')
+    await redis.hSet(`boss:${testBossId}:usernames`, 'user-1', 'Player1')
+
+    const token = makeToken({ userId: 'user-1', username: 'Player1' })
+    const socket = await connectSocket(TEST_PORT_PHASE4, { cookie: `token=${token}` })
+
+    const deathPromise = waitForEvent<{ winnerId: string }>(socket, 'boss:death')
+    socket.emit('attack:intent', { bossId: testBossId })
+    await deathPromise
+
+    const { prisma } = await import('../db/prisma.js')
+    expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'user-1' },
+        data: expect.objectContaining({
+          killCount: { increment: 1 },
+          kbBalance: { increment: 1 },
+        }),
+      })
+    )
+
+    socket.disconnect()
+  })
+
+  it('Phase 4 Test 3: topContributors sorted by damageDealt descending, max 5', async () => {
+    await redis.set(`boss:${testBossId}:hp`, '1')
+    // Seed 6 players with varying damage
+    for (let i = 1; i <= 6; i++) {
+      await redis.hSet(`boss:${testBossId}:usernames`, `player-${i}`, `Player${i}`)
+      await redis.hSet(`boss:${testBossId}:damage`, `player-${i}`, String(i * 100))
+    }
+    await redis.hSet(`boss:${testBossId}:usernames`, 'user-1', 'Player1')
+
+    const token = makeToken({ userId: 'user-1', username: 'Player1' })
+    const socket = await connectSocket(TEST_PORT_PHASE4, { cookie: `token=${token}` })
+
+    const deathPromise = waitForEvent<{
+      topContributors: Array<{ username: string; damageDealt: number; title: string | null }>
+    }>(socket, 'boss:death')
+    socket.emit('attack:intent', { bossId: testBossId })
+
+    const payload = await deathPromise
+    expect(payload.topContributors.length).toBeLessThanOrEqual(5)
+    // Verify descending order
+    for (let i = 0; i < payload.topContributors.length - 1; i++) {
+      expect(payload.topContributors[i].damageDealt).toBeGreaterThanOrEqual(payload.topContributors[i + 1].damageDealt)
+    }
+
+    socket.disconnect()
+  })
+
+  it('Phase 4 Test 4: equippedTitle stored in boss:titles Redis hash during attack', async () => {
+    const token = makeToken({ userId: 'user-1', username: 'Player1' })
+    const socket = await connectSocket(TEST_PORT_PHASE4, { cookie: `token=${token}` })
+
+    // Wait for attack to be processed
+    const hpUpdatePromise = waitForEvent<{ hp: number }>(socket, 'boss:hp_update')
+    socket.emit('attack:intent', { bossId: testBossId })
+    await hpUpdatePromise
+
+    // Verify equippedTitle stored in Redis
+    const storedTitle = await redis.hGet(`boss:${testBossId}:titles`, 'user-1')
+    expect(storedTitle).toBe('slayer')
+
+    socket.disconnect()
   })
 })

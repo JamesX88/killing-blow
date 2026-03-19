@@ -77,8 +77,15 @@ export async function ensureActiveBoss(
   prisma: PrismaClient
 ): Promise<void> {
   const current = await redis.get('boss:current')
-  if (current) return
-  await spawnNextBoss(redis, prisma, 0)
+  if (current) {
+    // Boss exists — skip spawn only if it hasn't been killed yet
+    const killed = await redis.get(`boss:${current}:killed`)
+    if (!killed) return
+    // Dead boss still in current slot — clear it and spawn fresh
+    await redis.del('boss:current')
+  }
+  const lastBoss = await prisma.boss.findFirst({ orderBy: { bossNumber: 'desc' } })
+  await spawnNextBoss(redis, prisma, lastBoss?.bossNumber ?? 0)
 }
 
 export async function getActivePlayers(

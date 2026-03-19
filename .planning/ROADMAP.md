@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Auth, infrastructure, and big-number safety before any game logic is written (completed 2026-03-18)
 - [ ] **Phase 2: Core Boss Loop** - Real-time shared HP bar, damage queue, and server-authoritative killing blow
 - [x] **Phase 3: Player Progression** - Gold economy, stat upgrades, offline auto-attack, and active play bonus (completed 2026-03-19)
-- [ ] **Phase 4: Competition and Social** - Killing blow announcements, KB leaderboard, cosmetic titles, and boss lore
+- [x] **Phase 4: Competition and Social** - Killing blow announcements, KB leaderboard, cosmetic titles, and boss lore (completed 2026-03-19)
 
 ## Phase Details
 
@@ -83,7 +83,7 @@ Plans:
   3. Post-boss death screen displays the top damage contributors for that fight
   4. Player can spend KB Currency to equip a cosmetic title that appears next to their name in the player sidebar and on the leaderboard
   5. Each boss displays a unique name and a brief lore snippet visible during the fight
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] 04-01-PLAN.md — Prisma migration, shared type extensions, title/lore catalogues, bossState lore integration
@@ -100,4 +100,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 5/5 | Complete   | 2026-03-18 |
 | 2. Core Boss Loop | 3/4 | In Progress|  |
 | 3. Player Progression | 3/3 | Complete   | 2026-03-19 |
-| 4. Competition and Social | 2/3 | In Progress|  |
+| 4. Competition and Social | 3/3 | Complete   | 2026-03-19 |

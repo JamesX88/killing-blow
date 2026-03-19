@@ -14,3 +14,11 @@ and `boss:spawn` is never emitted, causing a 5000ms timeout.
 block in the `Boss loop events` describe. Also consider adding `boss.upsert: vi.fn()` to
 the top-level prisma mock factory.
 **Impact:** 1 test failing consistently; does not affect Phase 4 tests.
+
+### playerStats.test.ts — Test 14: 30 seconds offline returns Decimal(0)
+
+**Discovered during:** Plan 04-03, Task 3 (automated verification)
+**Status:** Pre-existing failure (confirmed — same failure count before and after 04-03 changes)
+**Root cause:** `computeOfflineGold` does not apply a 60-second minimum threshold before calculating offline gold. The test expects `Decimal(0)` for 30s offline but receives `375`.
+**Fix:** Add an early return in `computeOfflineGold` when `offlineSeconds < 60`.
+**Impact:** Minor — offline gold threshold may grant gold for shorter offline periods than intended. Does not affect Phase 4 features.

@@ -16,12 +16,9 @@ export function BossHpBar({ hp, maxHp }: BossHpBarProps) {
         aria-valuenow={hp}
         aria-valuemin={0}
         aria-valuemax={maxHp}
-        className="h-4 w-full rounded-full bg-zinc-800 overflow-hidden"
+        style={{ height: '16px', width: '100%', borderRadius: '9999px', backgroundColor: '#27272a', overflow: 'hidden' }}
       >
-        <div
-          className="h-full bg-primary transition-[width] duration-150 ease-linear"
-          style={{ width: `${percent}%` }}
-        />
+        <div style={{ height: '100%', width: `${percent}%`, backgroundColor: '#dc2626', transition: 'width 150ms linear' }} />
       </div>
       <p className="text-center text-[28px] font-semibold leading-[1.1]">
         {formatNumber(new Decimal(hp))} / {formatNumber(new Decimal(maxHp))}

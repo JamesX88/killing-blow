@@ -67,6 +67,10 @@ Progress: [██░░░░░░░░] 22%
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 5 added: UI Overhaul — Mobile Game Feel
+
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.

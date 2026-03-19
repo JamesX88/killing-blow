@@ -93,7 +93,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -101,13 +101,23 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. Core Boss Loop | 3/4 | In Progress|  |
 | 3. Player Progression | 3/3 | Complete   | 2026-03-19 |
 | 4. Competition and Social | 3/3 | Complete   | 2026-03-19 |
+| 5. UI Overhaul | 0/3 | Planned | |
 
 ### Phase 5: UI Overhaul — Mobile Game Feel
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Transform the game from blocks-on-a-page to an immersive full-viewport dungeon with atmospheric effects, dramatic boss visuals, dark glass panels, mobile-responsive drawer layout, and motion polish on all key moments
+**Requirements**: UX-01, UX-02, UX-03, UX-04, UX-05, UX-06, UX-07, UX-08, UX-09
 **Depends on:** Phase 4
-**Plans:** 0 plans
+**Success Criteria** (what must be TRUE):
+  1. Game fills exactly 100dvh with no page scroll and a dark atmospheric dungeon background behind all content
+  2. Boss is center stage as an SVG silhouette with idle breathing, hit flash, and death animations
+  3. HP bar is 28px tall with red glow, low-HP pulse, and numbers displayed above the bar
+  4. Kill flash and screen shake fire on boss death, respecting prefers-reduced-motion
+  5. Mobile users access Upgrades and Titles via a persistent bottom tab bar that opens a slide-up drawer
+  6. All panels use dark glass surface treatment (bg-black/40 backdrop-blur-sm border-white/10)
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 5 to break down)
+- [ ] 05-01-PLAN.md — CSS tokens, keyframes, DungeonBackground/KillFlashOverlay components, App.tsx bg cleanup
+- [ ] 05-02-PLAN.md — Component visual upgrades: BossHpBar, BossSprite, DamageNumbers, KBA, dark glass on all panels
+- [ ] 05-03-PLAN.md — Game.tsx full-viewport layout rewrite, mobile drawer, kill flash/shake wiring, visual checkpoint

@@ -1,4 +1,6 @@
-import { useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
+import { Trophy } from 'lucide-react'
 import { useSessionStore } from '../stores/sessionStore.js'
 import { useBossStore } from '../stores/bossStore.js'
 import { usePlayerStore } from '../stores/playerStore.js'
@@ -12,6 +14,8 @@ import { UpgradePanel } from '../components/UpgradePanel.js'
 import { OfflineRewardToast } from '../components/OfflineRewardToast.js'
 import { KillingBlowAnnouncement } from '../components/KillingBlowAnnouncement.js'
 import { TitleShop } from '../components/TitleShop.js'
+import { DungeonBackground } from '../components/DungeonBackground.js'
+import { KillFlashOverlay } from '../components/KillFlashOverlay.js'
 import { Button } from '../components/ui/button.js'
 
 export default function Game() {
@@ -19,6 +23,11 @@ export default function Game() {
   const { bossId, name, lore, hp, maxHp, bossNumber, isDefeated, defeatMessage } = useBossStore()
   const { activePlayers } = usePlayerStore()
   const { spdLevel } = useProgressionStore()
+
+  const [killFlashActive, setKillFlashActive] = useState(false)
+  const [drawerTab, setDrawerTab] = useState<'upgrades' | 'titles' | null>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = useReducedMotion()
 
   // Connect socket and subscribe to game events on mount
   useEffect(() => {
@@ -86,8 +95,32 @@ export default function Game() {
     }
   }, [isAuthenticated])
 
-  // Loading state — return null until bossId is populated (same as Profile.tsx pattern)
-  if (!isAuthenticated || !bossId) return null
+  // Kill flash + screen shake on boss:death
+  // CRITICAL: Trigger from socket event directly, NOT from zustand isDefeated state.
+  // This avoids the race condition where isDefeated is stale on remount (see RESEARCH.md Pitfall 4).
+  useEffect(() => {
+    const handleDeath = () => {
+      setKillFlashActive(true)
+      setTimeout(() => setKillFlashActive(false), 600)
+      // Screen shake on content layer (not root -- see Pitfall 3)
+      if (contentRef.current && !prefersReducedMotion) {
+        contentRef.current.classList.add('screen-shake')
+        setTimeout(() => contentRef.current?.classList.remove('screen-shake'), 400)
+      }
+    }
+    socket.on('boss:death', handleDeath)
+    return () => { socket.off('boss:death', handleDeath) }
+  }, [prefersReducedMotion])
+
+  // Loading state — atmospheric dungeon loading screen
+  if (!isAuthenticated || !bossId) {
+    return (
+      <div className="relative h-dvh overflow-hidden flex items-center justify-center">
+        <DungeonBackground />
+        <p className="relative z-10 text-[28px] font-bold text-muted-foreground">Summoning...</p>
+      </div>
+    )
+  }
 
   const handleAttack = () => {
     if (isDefeated) return
@@ -96,60 +129,114 @@ export default function Game() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-wrap lg:flex-nowrap gap-8 p-8">
-        {/* Boss Area */}
-        <div className="flex-1 flex flex-col gap-6">
-          <div className="bg-card border border-border rounded-lg p-6">
-            {/* Boss Name */}
-            <h1 className="text-xl font-semibold text-zinc-50 mb-1">{name}</h1>
-            {lore && (
-              <p className="text-sm text-muted-foreground mb-2">{lore}</p>
-            )}
+      <div className="relative h-dvh overflow-hidden">
+        {/* Layer 0: Dungeon background */}
+        <DungeonBackground />
+
+        {/* Layer 10: Game content -- screen shake applies here */}
+        <div ref={contentRef} className="relative z-10 h-full flex flex-col lg:flex-row">
+
+          {/* Boss zone -- fills available space */}
+          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 pt-4 pb-20 lg:pb-4 min-w-0">
+            {/* Leaderboard nav -- top right trophy icon */}
+            <div className="absolute top-4 right-4 z-20">
+              <a
+                href="/leaderboard"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Leaderboard"
+              >
+                <Trophy className="w-5 h-5" />
+              </a>
+            </div>
+
+            {/* Boss Name + Lore */}
+            <div className="text-center">
+              <h1
+                className="text-[28px] font-bold text-foreground leading-[1.1]"
+                style={{ textShadow: '0 0 20px rgba(220, 38, 38, 0.6)' }}
+              >
+                {name}
+              </h1>
+              {lore && (
+                <p className="text-[14px] text-muted-foreground mt-1">{lore}</p>
+              )}
+            </div>
 
             {/* Boss Sprite + Damage Numbers */}
-            <div className="relative">
+            <div className="relative flex-1 flex items-center justify-center w-full max-w-[400px]">
               <BossSprite bossNumber={bossNumber} isDefeated={isDefeated} />
               <DamageNumbers />
             </div>
 
-            {/* Defeat Overlay */}
+            {/* Defeat Message */}
             {isDefeated && defeatMessage && (
-              <p className="text-sm text-muted-foreground text-center mt-2">
+              <p className="text-[14px] text-muted-foreground text-center">
                 {defeatMessage}
               </p>
             )}
+
+            {/* HP Bar */}
+            <div className="w-full max-w-[400px]">
+              <BossHpBar hp={hp} maxHp={maxHp} />
+            </div>
+
+            {/* Attack Button */}
+            <Button
+              onClick={handleAttack}
+              disabled={isDefeated}
+              className="min-h-[64px] w-full max-w-[320px] text-base font-bold active:scale-95 transition-transform"
+              aria-label="Attack the boss"
+            >
+              Attack
+            </Button>
           </div>
 
-          {/* HP Bar */}
-          <BossHpBar hp={hp} maxHp={maxHp} />
-
-          {/* Attack Button */}
-          <Button
-            onClick={handleAttack}
-            disabled={isDefeated}
-            className="min-h-[44px] text-base font-semibold"
-            aria-label="Attack the boss"
-          >
-            Attack Boss
-          </Button>
-
-          {/* Nav link to Leaderboard */}
-          <a href="/leaderboard" className="text-sm text-muted-foreground hover:text-foreground underline text-center">
-            Leaderboard
-          </a>
+          {/* Desktop right sidebar -- hidden on mobile */}
+          <div className="hidden lg:flex flex-col gap-4 w-72 p-4 overflow-y-auto">
+            <UpgradePanel />
+            <TitleShop />
+            <PlayerSidebar players={activePlayers} />
+          </div>
         </div>
 
-        {/* Upgrade Panel */}
-        <UpgradePanel />
+        {/* Layer 20: Mobile bottom tab bar -- visible only on mobile */}
+        <div className="fixed bottom-0 left-0 right-0 z-20 h-12 flex lg:hidden border-t border-white/10 bg-black/60 backdrop-blur-sm">
+          <button
+            className={`flex-1 text-[14px] font-bold transition-colors ${drawerTab === 'upgrades' ? 'text-primary' : 'text-muted-foreground'}`}
+            onClick={() => setDrawerTab(drawerTab === 'upgrades' ? null : 'upgrades')}
+          >
+            Upgrades
+          </button>
+          <button
+            className={`flex-1 text-[14px] font-bold transition-colors ${drawerTab === 'titles' ? 'text-primary' : 'text-muted-foreground'}`}
+            onClick={() => setDrawerTab(drawerTab === 'titles' ? null : 'titles')}
+          >
+            Titles
+          </button>
+        </div>
 
-        {/* Title Shop */}
-        <TitleShop />
+        {/* Layer 20: Mobile drawer -- slides up when tab active */}
+        <AnimatePresence>
+          {drawerTab && (
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="fixed bottom-12 left-0 right-0 z-20 h-[60vh] lg:hidden bg-black/90 backdrop-blur-sm border-t border-white/10 overflow-y-auto p-4"
+            >
+              {drawerTab === 'upgrades' ? <UpgradePanel /> : <TitleShop />}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Player Sidebar */}
-        <PlayerSidebar players={activePlayers} />
+        {/* Layer 40: Kill flash overlay */}
+        <KillFlashOverlay active={killFlashActive} />
+
+        {/* Layer 50: KBA already at z-50 (positioned fixed in its own component) */}
       </div>
 
-      {/* Offline Reward Toast (outside main layout, fixed positioned) */}
+      {/* Outside viewport container -- fixed positioned independently */}
       <OfflineRewardToast />
       <KillingBlowAnnouncement />
     </>

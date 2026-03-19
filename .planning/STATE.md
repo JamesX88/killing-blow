@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-competition-and-social-03-PLAN.md (proxy bug fix after human verify)
-last_updated: "2026-03-19T14:29:36.382Z"
+stopped_at: Completed 05-ui-overhaul-mobile-game-feel-01-PLAN.md
+last_updated: "2026-03-19T19:05:32.471Z"
 last_activity: 2026-03-19 — Plan 03-02 complete; server logic for gold/upgrades/heartbeat/offline/dynamic-boss-hp
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 3
-  total_plans: 15
-  completed_plans: 14
+  total_plans: 18
+  completed_plans: 15
   percent: 22
 ---
 
@@ -64,6 +64,7 @@ Progress: [██░░░░░░░░] 22%
 | Phase 04-competition-and-social P02 | 9 | 2 tasks | 7 files |
 | Phase 04-competition-and-social P03 | 11 | 2 tasks | 10 files |
 | Phase 04-competition-and-social P03 | 15 | 3 tasks | 1 files |
+| Phase 05-ui-overhaul-mobile-game-feel P01 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,8 @@ Recent decisions affecting current work:
 - [Phase 04-competition-and-social]: PostFightScreen embedded as a section within KillingBlowAnnouncement — single overlay, not two stacked overlays
 - [Phase 04-competition-and-social]: tsconfig.json types: ['vite/client'] added to fix pre-existing import.meta.env TypeScript error in client package
 - [Phase 04-competition-and-social]: Vite proxy config must include all REST API paths (/leaderboard, /titles) — omissions cause silent fetch failures that return HTML instead of JSON
+- [Phase 05-ui-overhaul-mobile-game-feel]: All Phase 5 keyframe animations wrapped in prefers-reduced-motion: no-preference guard — motion-sensitive users see no animations from screen-shake, kill-flash, hp-pulse, or boss-flash
+- [Phase 05-ui-overhaul-mobile-game-feel]: App.tsx root wrapper bg-zinc-950 removed — game route controls its own background via DungeonBackground component; non-game routes inherit bg-background from body CSS in index.css
 
 ### Pending Todos
 
@@ -125,6 +128,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T14:29:36.380Z
-Stopped at: Completed 04-competition-and-social-03-PLAN.md (proxy bug fix after human verify)
+Last session: 2026-03-19T19:05:32.469Z
+Stopped at: Completed 05-ui-overhaul-mobile-game-feel-01-PLAN.md
 Resume file: None

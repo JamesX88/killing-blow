@@ -17,6 +17,8 @@ export default defineConfig({
       '/auth': 'http://localhost:3000',
       '/boss': 'http://localhost:3000',
       '/upgrades': 'http://localhost:3000',
+      '/leaderboard': 'http://localhost:3000',
+      '/titles': 'http://localhost:3000',
       '^/profile/.+': 'http://localhost:3000',
       '/socket.io': {
         target: 'http://localhost:3000',

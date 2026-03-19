@@ -38,8 +38,8 @@
 
 - [x] **UI-01**: Active player sidebar shows all players currently in the fight with their DPS or damage contribution
 - [x] **UI-02**: All game numbers are formatted with K/M/B/T suffixes (big number library from day one)
-- [ ] **UI-03**: Player can spend KB Currency on cosmetic titles displayed next to their name
-- [ ] **UI-04**: Each boss displays a unique name and brief lore snippet during the fight
+- [x] **UI-03**: Player can spend KB Currency on cosmetic titles displayed next to their name
+- [x] **UI-04**: Each boss displays a unique name and brief lore snippet during the fight
 
 ## v2 Requirements
 
@@ -95,8 +95,8 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 | PROG-04 | Phase 3 | Complete |
 | UI-01 | Phase 2 | Complete |
 | UI-02 | Phase 1 | Complete (01-01) |
-| UI-03 | Phase 4 | Pending |
-| UI-04 | Phase 4 | Pending |
+| UI-03 | Phase 4 | Complete |
+| UI-04 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 21 total

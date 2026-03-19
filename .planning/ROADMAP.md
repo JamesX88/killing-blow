@@ -83,7 +83,7 @@ Plans:
   3. Post-boss death screen displays the top damage contributors for that fight
   4. Player can spend KB Currency to equip a cosmetic title that appears next to their name in the player sidebar and on the leaderboard
   5. Each boss displays a unique name and a brief lore snippet visible during the fight
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] 04-01-PLAN.md — Prisma migration, shared type extensions, title/lore catalogues, bossState lore integration
@@ -100,4 +100,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 5/5 | Complete   | 2026-03-18 |
 | 2. Core Boss Loop | 3/4 | In Progress|  |
 | 3. Player Progression | 3/3 | Complete   | 2026-03-19 |
-| 4. Competition and Social | 0/3 | Not started | - |
+| 4. Competition and Social | 1/3 | In Progress|  |

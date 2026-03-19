@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Checkpoint:human-verify in 03-03-PLAN.md — Task 1 complete, awaiting visual verification"
-last_updated: "2026-03-19T10:10:03.992Z"
+stopped_at: Completed 04-competition-and-social-01-PLAN.md
+last_updated: "2026-03-19T13:32:30.481Z"
 last_activity: 2026-03-19 — Plan 03-02 complete; server logic for gold/upgrades/heartbeat/offline/dynamic-boss-hp
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 12
-  completed_plans: 11
+  total_plans: 15
+  completed_plans: 12
   percent: 22
 ---
 
@@ -60,6 +60,7 @@ Progress: [██░░░░░░░░] 22%
 | Phase 03-player-progression P01 | 7 | 1 tasks | 7 files |
 | Phase 03-player-progression P02 | 14 | 2 tasks | 7 files |
 | Phase 03-player-progression P03 | 3 | 1 tasks | 5 files |
+| Phase 04-competition-and-social P01 | 6 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ Recent decisions affecting current work:
 - [Phase 03-02]: creditGold mocked at module level in gateway tests — avoids $transaction mock complexity that caused cross-test isolation failures
 - [Phase 03-player-progression]: Import Decimal via @killing-blow/shared-types in client packages — break_eternity.js is not a direct client dependency and Rolldown cannot resolve it
 - [Phase 03-03]: UpgradePanel fetches GET /upgrades/costs on mount and after each purchase to stay in sync with server-authoritative state
+- [Phase 04-competition-and-social]: BOSS_LORE cycled with modulo — getBossLore(bossNumber % 10) gives repeating named bosses across unlimited boss count
+- [Phase 04-competition-and-social]: ownedTitles stored as JSON string (String @default('[]')) on User — avoids Prisma scalar list limitations on PostgreSQL without array extension
+- [Phase 04-competition-and-social]: equippedTitle stored in boss:{bossId}:titles Redis hash at attack time — no DB lookup in getActivePlayers hot path
 
 ### Pending Todos
 
@@ -108,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T10:10:03.990Z
-Stopped at: Checkpoint:human-verify in 03-03-PLAN.md — Task 1 complete, awaiting visual verification
+Last session: 2026-03-19T13:32:30.479Z
+Stopped at: Completed 04-competition-and-social-01-PLAN.md
 Resume file: None

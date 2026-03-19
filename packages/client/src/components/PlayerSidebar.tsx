@@ -16,8 +16,13 @@ export function PlayerSidebar({ players }: PlayerSidebarProps) {
           <ul className="space-y-2">
             {players.map(player => (
               <li key={player.userId} className="flex items-center justify-between">
-                <span className="text-sm text-zinc-300 truncate">{player.username}</span>
-                <span className="text-sm font-semibold text-zinc-50">
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-sm text-zinc-300 truncate">{player.username}</span>
+                  {player.equippedTitle && (
+                    <span className="text-sm text-muted-foreground flex-shrink-0">[{player.equippedTitle}]</span>
+                  )}
+                </div>
+                <span className="text-sm font-semibold text-zinc-50 flex-shrink-0">
                   {formatNumber(new Decimal(player.damageDealt))} dmg
                 </span>
               </li>

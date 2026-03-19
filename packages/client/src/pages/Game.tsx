@@ -10,11 +10,12 @@ import { DamageNumbers } from '../components/DamageNumbers.js'
 import { PlayerSidebar } from '../components/PlayerSidebar.js'
 import { UpgradePanel } from '../components/UpgradePanel.js'
 import { OfflineRewardToast } from '../components/OfflineRewardToast.js'
+import { KillingBlowAnnouncement } from '../components/KillingBlowAnnouncement.js'
 import { Button } from '../components/ui/button.js'
 
 export default function Game() {
   const { isAuthenticated } = useSessionStore()
-  const { bossId, name, hp, maxHp, bossNumber, isDefeated, defeatMessage } = useBossStore()
+  const { bossId, name, lore, hp, maxHp, bossNumber, isDefeated, defeatMessage } = useBossStore()
   const { activePlayers } = usePlayerStore()
   const { spdLevel } = useProgressionStore()
 
@@ -99,7 +100,10 @@ export default function Game() {
         <div className="flex-1 flex flex-col gap-6">
           <div className="bg-card border border-border rounded-lg p-6">
             {/* Boss Name */}
-            <h1 className="text-xl font-semibold text-zinc-50 mb-2">{name}</h1>
+            <h1 className="text-xl font-semibold text-zinc-50 mb-1">{name}</h1>
+            {lore && (
+              <p className="text-sm text-muted-foreground mb-2">{lore}</p>
+            )}
 
             {/* Boss Sprite + Damage Numbers */}
             <div className="relative">
@@ -138,6 +142,7 @@ export default function Game() {
 
       {/* Offline Reward Toast (outside main layout, fixed positioned) */}
       <OfflineRewardToast />
+      <KillingBlowAnnouncement />
     </>
   )
 }

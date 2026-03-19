@@ -2,6 +2,7 @@ import { io } from 'socket.io-client'
 import { useBossStore } from '../stores/bossStore.js'
 import { usePlayerStore } from '../stores/playerStore.js'
 import { useProgressionStore } from '../stores/progressionStore.js'
+import { useAnnouncementStore } from '../stores/announcementStore.js'
 
 export const socket = io(import.meta.env.VITE_SERVER_URL || '', {
   autoConnect: false,
@@ -15,9 +16,17 @@ export function subscribeToGame() {
   })
   socket.on('boss:spawn', (boss) => {
     useBossStore.getState().setBoss(boss)
+    useAnnouncementStore.getState().clearAnnouncement()
   })
-  socket.on('boss:death', ({ winnerUsername }) => {
+  socket.on('boss:death', ({ winnerUsername, winnerId, winnerTitle, winnerKillCount, topContributors }) => {
     useBossStore.getState().markDefeated(winnerUsername || null)
+    useAnnouncementStore.getState().setAnnouncement({
+      winnerId,
+      winnerUsername,
+      winnerTitle,
+      winnerKillCount,
+      topContributors,
+    })
   })
   socket.on('player:list_update', (players) => {
     usePlayerStore.getState().setPlayers(players)

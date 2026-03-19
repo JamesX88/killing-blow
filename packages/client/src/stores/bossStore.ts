@@ -12,6 +12,7 @@ interface BossStoreState extends BossState {
 export const useBossStore = create<BossStoreState>((set) => ({
   bossId: '',
   name: '',
+  lore: '',
   hp: 0,
   maxHp: 1,
   bossNumber: 0,

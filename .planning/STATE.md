@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-ui-overhaul-mobile-game-feel-01-PLAN.md
-last_updated: "2026-03-19T19:05:32.471Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-19T19:08:47.499Z"
 last_activity: 2026-03-19 — Plan 03-02 complete; server logic for gold/upgrades/heartbeat/offline/dynamic-boss-hp
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 18
-  completed_plans: 15
+  completed_plans: 16
   percent: 22
 ---
 
@@ -65,6 +65,7 @@ Progress: [██░░░░░░░░] 22%
 | Phase 04-competition-and-social P03 | 11 | 2 tasks | 10 files |
 | Phase 04-competition-and-social P03 | 15 | 3 tasks | 1 files |
 | Phase 05-ui-overhaul-mobile-game-feel P01 | 2 | 2 tasks | 4 files |
+| Phase 05-ui-overhaul-mobile-game-feel PP02 | 6 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -116,6 +117,9 @@ Recent decisions affecting current work:
 - [Phase 04-competition-and-social]: Vite proxy config must include all REST API paths (/leaderboard, /titles) — omissions cause silent fetch failures that return HTML instead of JSON
 - [Phase 05-ui-overhaul-mobile-game-feel]: All Phase 5 keyframe animations wrapped in prefers-reduced-motion: no-preference guard — motion-sensitive users see no animations from screen-shake, kill-flash, hp-pulse, or boss-flash
 - [Phase 05-ui-overhaul-mobile-game-feel]: App.tsx root wrapper bg-zinc-950 removed — game route controls its own background via DungeonBackground component; non-game routes inherit bg-background from body CSS in index.css
+- [Phase 05-02]: SVG silhouettes use filled dark paths with red eyes - recognizable boss shapes without image asset pipeline
+- [Phase 05-02]: UpgradePanel Card components removed - plain div with dark glass is Phase 5 pattern
+- [Phase 05-02]: Crit detection uses amount >= 75 threshold (3x BASE_DAMAGE=25) since server has no isCrit flag
 
 ### Pending Todos
 
@@ -128,6 +132,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T19:05:32.469Z
-Stopped at: Completed 05-ui-overhaul-mobile-game-feel-01-PLAN.md
+Last session: 2026-03-19T19:08:47.497Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

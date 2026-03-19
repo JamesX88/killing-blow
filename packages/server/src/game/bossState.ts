@@ -12,6 +12,9 @@ const killClaimScript = readFileSync(join(__dirname, 'killClaim.lua'), 'utf8')
 
 const BASE_DAMAGE = 25
 const BOSS_MAX_HP = 1000
+const TARGET_FIGHT_DURATION = 300  // 5 minutes
+const MIN_BOSS_HP = 1000
+const MAX_BOSS_HP = 10_000_000
 
 export function getBaseDamage(): number {
   return BASE_DAMAGE
@@ -43,14 +46,32 @@ export async function applyDamage(
   return { newHp, killed, winnerId }
 }
 
+export async function computeAggregateDps(
+  redis: RedisClient,
+  prisma: PrismaClient,
+  bossId: string
+): Promise<number> {
+  const damageMap = await redis.hGetAll(`boss:${bossId}:damage`)
+  const totalDamage = Object.values(damageMap).reduce((sum, v) => sum + Number(v), 0)
+
+  const boss = await prisma.boss.findUnique({ where: { id: bossId } })
+  if (!boss || !boss.defeatedAt) return 0
+
+  const fightSeconds = (boss.defeatedAt.getTime() - boss.spawnedAt.getTime()) / 1000
+  return fightSeconds > 0 ? totalDamage / fightSeconds : 0
+}
+
 export async function spawnNextBoss(
   redis: RedisClient,
   prisma: PrismaClient,
-  prevBossNumber: number
+  prevBossNumber: number,
+  overrideMaxHp?: number
 ): Promise<BossState> {
   const bossNumber = prevBossNumber + 1
   const name = `Boss #${bossNumber}`
-  const maxHp = BOSS_MAX_HP
+  const maxHp = Math.round(
+    Math.min(MAX_BOSS_HP, Math.max(MIN_BOSS_HP, overrideMaxHp != null && overrideMaxHp > 0 ? overrideMaxHp : BOSS_MAX_HP))
+  )
 
   const boss = await prisma.boss.create({
     data: { bossNumber, name, maxHp },

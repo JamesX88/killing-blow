@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js'
 import oauthRoutes from './routes/oauth.js'
 import profileRoutes from './routes/profile.js'
 import bossRoutes from './routes/boss.js'
+import upgradeRoutes from './routes/upgrades.js'
 
 export async function buildApp(opts = {}) {
   const app = Fastify(opts)
@@ -20,6 +21,7 @@ export async function buildApp(opts = {}) {
   await app.register(oauthRoutes, { prefix: '/auth' })
   await app.register(profileRoutes)
   await app.register(bossRoutes)
+  await app.register(upgradeRoutes)
 
   return app
 }

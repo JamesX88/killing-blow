@@ -32,6 +32,7 @@ import {
   getBaseDamage,
   getCurrentBossId,
   getBossState,
+  computeAggregateDps,
 } from './bossState.js'
 
 const REDIS_URL = process.env.REDIS_URL ?? 'redis://localhost:6379'
@@ -140,6 +141,85 @@ describe('bossState', () => {
       expect(hp).toBe('1000')
       expect(maxHp).toBe('1000')
       expect(current).toBe('spawned-boss-1')
+    })
+
+    it('Test 8b: spawnNextBoss with overrideMaxHp=5000 creates boss with maxHp=5000', async () => {
+      const mockPrisma = makeMockPrisma({ id: 'spawned-boss-dynamic' })
+
+      const state = await spawnNextBoss(redis, mockPrisma, 5, 5000)
+
+      expect(state.bossId).toBe('spawned-boss-dynamic')
+      expect(state.maxHp).toBe(5000)
+      expect(state.hp).toBe(5000)
+
+      const maxHpStr = await redis.get('boss:spawned-boss-dynamic:maxHp')
+      expect(maxHpStr).toBe('5000')
+    })
+
+    it('Test 8c: spawnNextBoss clamps overrideMaxHp below MIN_BOSS_HP (1000)', async () => {
+      const mockPrisma = makeMockPrisma({ id: 'spawned-boss-min' })
+
+      const state = await spawnNextBoss(redis, mockPrisma, 10, 100)
+
+      expect(state.maxHp).toBe(1000)
+    })
+
+    it('Test 8d: spawnNextBoss clamps overrideMaxHp above MAX_BOSS_HP (10000000)', async () => {
+      const mockPrisma = makeMockPrisma({ id: 'spawned-boss-max' })
+
+      const state = await spawnNextBoss(redis, mockPrisma, 11, 99_000_000)
+
+      expect(state.maxHp).toBe(10_000_000)
+    })
+  })
+
+  describe('computeAggregateDps', () => {
+    it('Test 9: returns totalDamage / fightSeconds from Redis damage hash + Prisma boss record', async () => {
+      const bossId = 'boss-dps-test-1'
+      const spawnedAt = new Date('2026-01-01T00:00:00Z')
+      const defeatedAt = new Date('2026-01-01T00:05:00Z') // 300 seconds later
+
+      await redis.hSet(`boss:${bossId}:damage`, { 'user-a': '1500', 'user-b': '4500' })
+
+      const mockPrisma = {
+        boss: {
+          findUnique: vi.fn().mockResolvedValue({
+            id: bossId,
+            bossNumber: 1,
+            name: 'Boss #1',
+            maxHp: 1000,
+            spawnedAt,
+            defeatedAt,
+            winnerId: 'user-b',
+          }),
+        },
+      } as unknown as import('@prisma/client').PrismaClient
+
+      const dps = await computeAggregateDps(redis, mockPrisma, bossId)
+      // totalDamage = 6000, fightSeconds = 300, dps = 20
+      expect(dps).toBeCloseTo(20, 1)
+    })
+
+    it('Test 10: returns 0 when boss has no defeatedAt', async () => {
+      const bossId = 'boss-dps-test-2'
+      await redis.hSet(`boss:${bossId}:damage`, { 'user-a': '500' })
+
+      const mockPrisma = {
+        boss: {
+          findUnique: vi.fn().mockResolvedValue({
+            id: bossId,
+            bossNumber: 2,
+            name: 'Boss #2',
+            maxHp: 1000,
+            spawnedAt: new Date(),
+            defeatedAt: null,
+            winnerId: null,
+          }),
+        },
+      } as unknown as import('@prisma/client').PrismaClient
+
+      const dps = await computeAggregateDps(redis, mockPrisma, bossId)
+      expect(dps).toBe(0)
     })
   })
 

@@ -1,4 +1,3 @@
-import { Progress, ProgressTrack, ProgressIndicator } from './ui/progress.js'
 import { formatNumber, Decimal } from '@killing-blow/shared-types'
 
 interface BossHpBarProps {
@@ -7,19 +6,23 @@ interface BossHpBarProps {
 }
 
 export function BossHpBar({ hp, maxHp }: BossHpBarProps) {
-  const percent = maxHp > 0 ? (hp / maxHp) * 100 : 0
+  const percent = maxHp > 0 ? Math.max(0, Math.min(100, (hp / maxHp) * 100)) : 0
 
   return (
     <div className="space-y-2">
-      <Progress
-        value={percent}
+      <div
+        role="progressbar"
         aria-label="Boss HP"
-        className="w-full"
+        aria-valuenow={hp}
+        aria-valuemin={0}
+        aria-valuemax={maxHp}
+        className="h-4 w-full rounded-full bg-zinc-800 overflow-hidden"
       >
-        <ProgressTrack className="h-4 bg-zinc-800">
-          <ProgressIndicator className="bg-primary transition-all duration-150" />
-        </ProgressTrack>
-      </Progress>
+        <div
+          className="h-full bg-primary transition-[width] duration-150 ease-linear"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
       <p className="text-center text-[28px] font-semibold leading-[1.1]">
         {formatNumber(new Decimal(hp))} / {formatNumber(new Decimal(maxHp))}
       </p>

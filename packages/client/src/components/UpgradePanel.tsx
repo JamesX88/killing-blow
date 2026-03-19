@@ -94,7 +94,7 @@ export function UpgradePanel() {
 
   return (
     <div
-      className="flex-shrink-0 w-64 bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg"
+      className="w-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg"
       style={{ boxShadow: 'var(--panel-border-glow)' }}
     >
       <div className="p-4 pb-2">

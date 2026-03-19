@@ -78,7 +78,7 @@ export function TitleShop() {
   }
 
   return (
-    <div className="w-72 flex-shrink-0">
+    <div className="w-full">
       <div
         className="bg-black/40 backdrop-blur-sm border border-white/10 rounded-lg p-4"
         style={{ boxShadow: 'var(--panel-border-glow)' }}

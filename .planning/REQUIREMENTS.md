@@ -22,10 +22,10 @@
 ### Killing Blow
 
 - [x] **KB-01**: Server atomically determines the killing blow winner (no client-trusted damage values)
-- [ ] **KB-02**: Prominent killing blow announcement is broadcast to all players when a winner is determined
-- [ ] **KB-03**: Killing blow winner receives KB Currency; global leaderboard tracks total kills per player
+- [x] **KB-02**: Prominent killing blow announcement is broadcast to all players when a winner is determined
+- [x] **KB-03**: Killing blow winner receives KB Currency; global leaderboard tracks total kills per player
 - [x] **KB-04**: Only players who dealt damage during the final ~1% of boss HP are eligible for the killing blow
-- [ ] **KB-05**: Post-boss death screen shows top damage contributors for that fight
+- [x] **KB-05**: Post-boss death screen shows top damage contributors for that fight
 
 ### Progression
 
@@ -85,10 +85,10 @@ Which phases cover which requirements. Confirmed during roadmap creation 2026-03
 | BOSS-03 | Phase 2 | Complete |
 | BOSS-04 | Phase 3 | Complete |
 | KB-01 | Phase 2 | Complete |
-| KB-02 | Phase 4 | Pending |
-| KB-03 | Phase 4 | Pending |
+| KB-02 | Phase 4 | Complete |
+| KB-03 | Phase 4 | Complete |
 | KB-04 | Phase 2 | Complete |
-| KB-05 | Phase 4 | Pending |
+| KB-05 | Phase 4 | Complete |
 | PROG-01 | Phase 3 | Complete |
 | PROG-02 | Phase 3 | Complete |
 | PROG-03 | Phase 3 | Complete |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-competition-and-social-01-PLAN.md
-last_updated: "2026-03-19T13:32:30.481Z"
+stopped_at: Completed 04-competition-and-social-02-PLAN.md
+last_updated: "2026-03-19T13:46:10.064Z"
 last_activity: 2026-03-19 — Plan 03-02 complete; server logic for gold/upgrades/heartbeat/offline/dynamic-boss-hp
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 15
-  completed_plans: 12
+  completed_plans: 13
   percent: 22
 ---
 
@@ -61,6 +61,7 @@ Progress: [██░░░░░░░░] 22%
 | Phase 03-player-progression P02 | 14 | 2 tasks | 7 files |
 | Phase 03-player-progression P03 | 3 | 1 tasks | 5 files |
 | Phase 04-competition-and-social P01 | 6 | 2 tasks | 9 files |
+| Phase 04-competition-and-social P02 | 9 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,9 @@ Recent decisions affecting current work:
 - [Phase 04-competition-and-social]: BOSS_LORE cycled with modulo — getBossLore(bossNumber % 10) gives repeating named bosses across unlimited boss count
 - [Phase 04-competition-and-social]: ownedTitles stored as JSON string (String @default('[]')) on User — avoids Prisma scalar list limitations on PostgreSQL without array extension
 - [Phase 04-competition-and-social]: equippedTitle stored in boss:{bossId}:titles Redis hash at attack time — no DB lookup in getActivePlayers hot path
+- [Phase 04-competition-and-social]: topContributors reads from Redis hashes at kill time — authoritative for current fight, no DB query needed
+- [Phase 04-competition-and-social]: prisma.user.update with increment:1 for both killCount and kbBalance in single atomic DB call on boss kill
+- [Phase 04-competition-and-social]: equippedTitle stored in boss:{bossId}:titles Redis hash at attack time via prisma.user.findUnique select
 
 ### Pending Todos
 
@@ -112,6 +116,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T13:32:30.479Z
-Stopped at: Completed 04-competition-and-social-01-PLAN.md
+Last session: 2026-03-19T13:46:10.062Z
+Stopped at: Completed 04-competition-and-social-02-PLAN.md
 Resume file: None

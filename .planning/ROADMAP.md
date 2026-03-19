@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Auth, infrastructure, and big-number safety before any game logic is written (completed 2026-03-18)
 - [ ] **Phase 2: Core Boss Loop** - Real-time shared HP bar, damage queue, and server-authoritative killing blow
-- [ ] **Phase 3: Player Progression** - Gold economy, stat upgrades, offline auto-attack, and active play bonus
+- [x] **Phase 3: Player Progression** - Gold economy, stat upgrades, offline auto-attack, and active play bonus (completed 2026-03-19)
 - [ ] **Phase 4: Competition and Social** - Killing blow announcements, KB leaderboard, cosmetic titles, and boss lore
 
 ## Phase Details
@@ -66,7 +66,7 @@ Plans:
   3. Player closes the tab for several hours, reopens it, and receives gold calculated from offline time using server-recorded last-seen timestamp (not client clock)
   4. Player with the browser tab focused deals measurably more DPS than the same player's offline rate
   5. Boss HP scales with the aggregate DPS of current active players so fights consistently last a reasonable duration regardless of player count
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] 03-01-PLAN.md — PlayerStats Prisma model, shared event types, playerStats.ts game math with TDD
@@ -94,5 +94,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete   | 2026-03-18 |
 | 2. Core Boss Loop | 3/4 | In Progress|  |
-| 3. Player Progression | 2/3 | In Progress|  |
+| 3. Player Progression | 3/3 | Complete   | 2026-03-19 |
 | 4. Competition and Social | 0/TBD | Not started | - |

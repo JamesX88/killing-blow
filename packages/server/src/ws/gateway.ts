@@ -5,11 +5,18 @@ import { createClient } from 'redis'
 import crypto from 'crypto'
 import {
   applyDamage,
-  getBaseDamage,
   getCurrentBossId,
   spawnNextBoss,
   getActivePlayers,
+  computeAggregateDps,
 } from '../game/bossState.js'
+import {
+  getPlayerDamage,
+  creditGold,
+  computeOfflineGold,
+  ACTIVE_BONUS_MULTIPLIER,
+} from '../game/playerStats.js'
+import Decimal from 'break_eternity.js'
 import { prisma } from '../db/prisma.js'
 
 export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>) {
@@ -35,33 +42,24 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
     }
   })
 
-  // Per-socket rate limit: max 10 attacks/second (100ms cooldown)
+  // Per-socket rate limit: max 10 attacks/second (50ms floor for DoS protection)
   const lastAttackTime = new Map<string, number>()
 
-  io.on('connection', async (socket) => {
+  io.on('connection', (socket) => {
     // socket.data.userId is guaranteed here
     socket.join('global-boss-room')
     console.log(`Player connected: ${socket.data.username} (${socket.data.userId})`)
 
-    // Send current player list to newly connected socket
-    if (redis) {
-      try {
-        const currentBossId = await getCurrentBossId(redis)
-        if (currentBossId) {
-          const players = await getActivePlayers(redis, currentBossId)
-          socket.emit('player:list_update', players)
-        }
-      } catch { /* non-fatal */ }
-    }
+    // Register all event handlers synchronously first — before any awaits
+    // This prevents Socket.io from dropping events that arrive during async init
 
     socket.on('attack:intent', async ({ bossId }: { bossId: string }) => {
       if (!redis) return
 
-      // Rate limit: drop events faster than 100ms from the same socket
+      // Quick DoS floor before any DB lookups
       const now = Date.now()
       const last = lastAttackTime.get(socket.id) || 0
-      if (now - last < 100) return
-      lastAttackTime.set(socket.id, now)
+      if (now - last < 50) return
 
       // Validate bossId matches current boss — discard stale intents silently
       const currentBossId = await getCurrentBossId(redis)
@@ -69,7 +67,25 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
 
       const userId = socket.data.userId as string
       const username = socket.data.username as string
-      const damage = getBaseDamage() // 25
+
+      // Load player stats (upsert to guarantee row exists)
+      const playerStats = await prisma.playerStats.upsert({
+        where: { userId },
+        update: {},
+        create: { userId, goldBalance: '0' },
+      })
+
+      const damageResult = getPlayerDamage(playerStats)
+
+      // Player-specific rate limit based on SPD stat
+      if (now - last < damageResult.attackDelay) return
+      lastAttackTime.set(socket.id, now)
+
+      // Check active bonus via Redis heartbeat key
+      const isActive = await redis.exists(`player:${userId}:heartbeat`)
+      const damage = isActive
+        ? Math.floor(damageResult.damage * ACTIVE_BONUS_MULTIPLIER)
+        : damageResult.damage
 
       // Store username for player list (outside Lua — not atomic, but fine for display)
       await redis.hSet(`boss:${bossId}:usernames`, userId, username)
@@ -79,6 +95,14 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
       const maxHp = Number(maxHpStr) || 1000
 
       const { newHp, killed, winnerId } = await applyDamage(redis, bossId, userId, damage, maxHp)
+
+      // Award gold proportional to damage dealt
+      const goldEarned = new Decimal(damage)
+      const newGoldBalance = await creditGold(prisma, userId, goldEarned)
+      socket.emit('player:gold_update', {
+        goldBalance: newGoldBalance,
+        goldEarned: goldEarned.toString(),
+      })
 
       // Broadcast HP update to all connected clients
       io.to('global-boss-room').emit('boss:hp_update', { bossId, hp: newHp, maxHp })
@@ -119,11 +143,21 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
           console.error('Failed to persist boss defeat (spawn will still proceed):', err)
         }
 
+        // Compute dynamic HP for next boss based on this fight's aggregate DPS
+        let dynamicMaxHp: number | undefined
+        try {
+          const aggregateDps = await computeAggregateDps(redis, prisma, bossId)
+          if (aggregateDps > 0) {
+            const TARGET_FIGHT_DURATION = 300
+            dynamicMaxHp = Math.round(aggregateDps * TARGET_FIGHT_DURATION)
+          }
+        } catch { /* fallback to default */ }
+
         // Wait for death animation + kill recognition before spawning next boss
         await new Promise(resolve => setTimeout(resolve, 3000))
 
         try {
-          const nextBoss = await spawnNextBoss(redis, prisma, prevBossNumber)
+          const nextBoss = await spawnNextBoss(redis, prisma, prevBossNumber, dynamicMaxHp)
           io.to('global-boss-room').emit('boss:spawn', nextBoss)
         } catch (err) {
           console.error('Failed to spawn next boss:', err)
@@ -131,9 +165,70 @@ export function setupGateway(io: Server, redis?: ReturnType<typeof createClient>
       }
     })
 
-    socket.on('disconnect', () => {
+    socket.on('player:heartbeat', async () => {
+      if (!redis) return
+      const userId = socket.data.userId as string
+      await redis.set(`player:${userId}:heartbeat`, '1', { EX: 10 })
+    })
+
+    socket.on('disconnect', async () => {
       console.log(`Player disconnected: ${socket.data.username}`)
       lastAttackTime.delete(socket.id)
+
+      // Persist lastSeenAt for offline progress calculation
+      const userId = socket.data.userId as string
+      try {
+        await prisma.playerStats.upsert({
+          where: { userId },
+          update: { lastSeenAt: new Date() },
+          create: { userId, lastSeenAt: new Date() },
+        })
+      } catch { /* non-fatal */ }
+
+      // Clean up heartbeat key
+      if (redis) {
+        await redis.del(`player:${userId}:heartbeat`).catch(() => {})
+      }
+    })
+
+    // Async initialization after handlers are registered — safe to await now
+    setImmediate(async () => {
+      // Send current player list to newly connected socket
+      if (redis) {
+        try {
+          const currentBossId = await getCurrentBossId(redis)
+          if (currentBossId) {
+            const players = await getActivePlayers(redis, currentBossId)
+            socket.emit('player:list_update', players)
+          }
+        } catch { /* non-fatal */ }
+      }
+
+      // Offline progress calculation on reconnect
+      try {
+        const stats = await prisma.playerStats.findUnique({ where: { userId: socket.data.userId } })
+        if (stats) {
+          const now = new Date()
+          const offlineSeconds = (now.getTime() - stats.lastSeenAt.getTime()) / 1000
+
+          if (offlineSeconds > 60) {
+            const offlineGold = computeOfflineGold(stats, offlineSeconds)
+            if (offlineGold.gt(0)) {
+              await creditGold(prisma, socket.data.userId, offlineGold)
+              socket.emit('player:offline_reward', {
+                goldEarned: offlineGold.toString(),
+                offlineSeconds: Math.floor(offlineSeconds),
+              })
+            }
+          }
+
+          // Reset lastSeenAt to current server time
+          await prisma.playerStats.update({
+            where: { userId: socket.data.userId },
+            data: { lastSeenAt: now },
+          })
+        }
+      } catch { /* non-fatal */ }
     })
   })
 }

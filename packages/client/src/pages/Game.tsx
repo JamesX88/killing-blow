@@ -184,7 +184,8 @@ export default function Game() {
             <Button
               onClick={handleAttack}
               disabled={isDefeated}
-              className="min-h-[64px] w-full max-w-[320px] text-base font-bold active:scale-95 transition-transform"
+              className="min-h-[64px] w-full max-w-[320px] text-base font-bold active:scale-95 transition-all"
+              style={{ boxShadow: '0 0 24px rgba(220,38,38,0.5), 0 0 8px rgba(220,38,38,0.3), inset 0 1px 0 rgba(255,255,255,0.1)' }}
               aria-label="Attack the boss"
             >
               Attack

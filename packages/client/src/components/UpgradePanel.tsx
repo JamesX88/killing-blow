@@ -147,8 +147,12 @@ export function UpgradePanel() {
                   <Button
                     onClick={() => handleUpgrade(stat)}
                     disabled={!canAfford || upgrading === stat}
-                    className="min-h-[44px] flex-1"
+                    className="min-h-[44px] flex-1 transition-all"
                     variant={canAfford ? 'default' : 'outline'}
+                    style={canAfford
+                      ? { boxShadow: '0 0 16px rgba(234,179,8,0.45), 0 0 6px rgba(234,179,8,0.25), inset 0 1px 0 rgba(255,255,255,0.1)' }
+                      : { borderColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.4)' }
+                    }
                   >
                     {upgrading === stat ? 'Upgrading...' : 'Upgrade'}
                   </Button>

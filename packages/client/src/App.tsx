@@ -6,6 +6,7 @@ import Register from './pages/Register.js'
 import Login from './pages/Login.js'
 import Profile from './pages/Profile.js'
 import Game from './pages/Game.js'
+import { Leaderboard } from './components/Leaderboard.js'
 
 function AuthRedirect() {
   const { isAuthenticated, isLoading } = useSessionStore()
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/game" element={<RequireAuth><Game /></RequireAuth>} />
+        <Route path="/leaderboard" element={<RequireAuth><Leaderboard /></RequireAuth>} />
         <Route path="/" element={<AuthRedirect />} />
       </Routes>
     </div>

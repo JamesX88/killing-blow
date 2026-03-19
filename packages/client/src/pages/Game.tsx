@@ -11,6 +11,7 @@ import { PlayerSidebar } from '../components/PlayerSidebar.js'
 import { UpgradePanel } from '../components/UpgradePanel.js'
 import { OfflineRewardToast } from '../components/OfflineRewardToast.js'
 import { KillingBlowAnnouncement } from '../components/KillingBlowAnnouncement.js'
+import { TitleShop } from '../components/TitleShop.js'
 import { Button } from '../components/ui/button.js'
 
 export default function Game() {
@@ -131,10 +132,18 @@ export default function Game() {
           >
             Attack Boss
           </Button>
+
+          {/* Nav link to Leaderboard */}
+          <a href="/leaderboard" className="text-sm text-muted-foreground hover:text-foreground underline text-center">
+            Leaderboard
+          </a>
         </div>
 
         {/* Upgrade Panel */}
         <UpgradePanel />
+
+        {/* Title Shop */}
+        <TitleShop />
 
         {/* Player Sidebar */}
         <PlayerSidebar players={activePlayers} />

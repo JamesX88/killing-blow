@@ -157,10 +157,10 @@ describe('bossState', () => {
       expect(current).toBe('spawned-boss-1')
     })
 
-    it('Test 8b: spawnNextBoss with overrideMaxHp=5000 creates boss with maxHp=5000', async () => {
+    it('Test 8b: spawnNextBoss with overrideMaxHp higher than scaled floor uses override', async () => {
       const mockPrisma = makeMockPrisma({ id: 'spawned-boss-dynamic' })
-
-      const state = await spawnNextBoss(redis, mockPrisma, 5, 5000)
+      // Boss #1 scaled floor = 1000; override=5000 > 1000 → uses override
+      const state = await spawnNextBoss(redis, mockPrisma, 0, 5000)
 
       expect(state.bossId).toBe('spawned-boss-dynamic')
       expect(state.maxHp).toBe(5000)
@@ -170,10 +170,10 @@ describe('bossState', () => {
       expect(maxHpStr).toBe('5000')
     })
 
-    it('Test 8c: spawnNextBoss clamps overrideMaxHp below MIN_BOSS_HP (1000)', async () => {
+    it('Test 8c: spawnNextBoss clamps overrideMaxHp below scaled floor to scaled floor', async () => {
       const mockPrisma = makeMockPrisma({ id: 'spawned-boss-min' })
-
-      const state = await spawnNextBoss(redis, mockPrisma, 10, 100)
+      // Boss #1 scaled floor = 1000; override=100 < 1000 → clamps to 1000
+      const state = await spawnNextBoss(redis, mockPrisma, 0, 100)
 
       expect(state.maxHp).toBe(1000)
     })

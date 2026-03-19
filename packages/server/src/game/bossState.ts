@@ -12,10 +12,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const killClaimScript = readFileSync(join(__dirname, 'killClaim.lua'), 'utf8')
 
 const BASE_DAMAGE = 25
-const BOSS_MAX_HP = 1000
-const TARGET_FIGHT_DURATION = 300  // 5 minutes
-const MIN_BOSS_HP = 1000
+const BASE_BOSS_HP = 1_000        // Boss #1 HP
+const HP_SCALE_FACTOR = 1.5       // 50% increase per boss number
+const TARGET_FIGHT_DURATION = 300  // 5 minutes (used for DPS-based tuning)
+const MIN_BOSS_HP = 500
 const MAX_BOSS_HP = 10_000_000
+
+/** HP target for a given boss number, independent of DPS */
+function scaledHpForBoss(bossNumber: number): number {
+  return Math.round(BASE_BOSS_HP * Math.pow(HP_SCALE_FACTOR, bossNumber - 1))
+}
 
 export function getBaseDamage(): number {
   return BASE_DAMAGE
@@ -70,8 +76,10 @@ export async function spawnNextBoss(
 ): Promise<BossState> {
   const bossNumber = prevBossNumber + 1
   const { name, lore } = getBossLore(bossNumber)
+  // Use DPS-tuned HP when available, otherwise scale by boss number
+  const baseHp = scaledHpForBoss(bossNumber)
   const maxHp = Math.round(
-    Math.min(MAX_BOSS_HP, Math.max(MIN_BOSS_HP, overrideMaxHp != null && overrideMaxHp > 0 ? overrideMaxHp : BOSS_MAX_HP))
+    Math.min(MAX_BOSS_HP, Math.max(baseHp, overrideMaxHp != null && overrideMaxHp > 0 ? overrideMaxHp : baseHp))
   )
 
   const boss = await prisma.boss.upsert({

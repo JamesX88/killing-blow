@@ -84,6 +84,9 @@ Each task was committed atomically:
 
 1. **Task 1: Announcement store, socket wiring, KillingBlowAnnouncement overlay, boss lore + sidebar titles** - `37c8ac5` (feat)
 2. **Task 2: Leaderboard page, TitleShop panel, and App.tsx routing** - `81fc9e0` (feat)
+3. **Task 3 fix: Add /leaderboard and /titles to Vite proxy config** - `0959303` (fix)
+
+- `packages/client/vite.config.ts` — Added proxy entries for /leaderboard and /titles routes
 
 ## Files Created/Modified
 
@@ -119,8 +122,18 @@ Each task was committed atomically:
 
 ---
 
-**Total deviations:** 1 auto-fixed (Rule 1 - pre-existing bug blocking plan acceptance criterion)
-**Impact on plan:** Required fix — TypeScript clean compile was a stated acceptance criterion. No scope creep.
+**2. [Rule 3 - Blocking] Missing Vite proxy entries for /leaderboard and /titles**
+- **Found during:** Task 3 checkpoint verification (user-reported bugs)
+- **Issue:** `vite.config.ts` proxy only listed `/api`, `/auth`, `/boss`, `/upgrades`, and `/profile` — both Phase 4 REST endpoints were missing, causing all fetches from the client to hit Vite's own dev server (404/HTML response). Leaderboard showed error; TitleShop showed 0 KB balance and empty title list.
+- **Fix:** Added `'/leaderboard': 'http://localhost:3000'` and `'/titles': 'http://localhost:3000'` to the proxy object in `vite.config.ts`
+- **Files modified:** `packages/client/vite.config.ts`
+- **Verification:** TypeScript compiles cleanly; proxy entries now route requests to the backend server
+- **Committed in:** `0959303`
+
+---
+
+**Total deviations:** 2 auto-fixed (1 Rule 1 pre-existing TypeScript bug, 1 Rule 3 missing proxy blocking all Phase 4 REST calls)
+**Impact on plan:** Both fixes required for correct operation. No scope creep.
 
 ## Issues Encountered
 
@@ -142,9 +155,10 @@ None — no external service configuration required. Dev servers must be started
 ## Next Phase Readiness
 
 - All Phase 4 client UI is complete and wired to server APIs and socket events
+- Vite proxy config correctly routes all REST endpoints (/leaderboard, /titles) to the backend
 - TypeScript compiles cleanly across all packages
-- Visual verification (Task 3 checkpoint) is the final gate before Phase 4 is considered complete
-- Once user approves visual verification, Phase 4 is done
+- Visual verification confirmed: announcement overlay works, leaderboard loads, title shop shows KB balance and all 5 titles
+- Phase 4 is complete
 
 ## Self-Check: PASSED
 
@@ -152,12 +166,17 @@ None — no external service configuration required. Dev servers must be started
 - KillingBlowAnnouncement.tsx: FOUND
 - Leaderboard.tsx: FOUND
 - TitleShop.tsx: FOUND
+- vite.config.ts proxy /leaderboard entry: FOUND
+- vite.config.ts proxy /titles entry: FOUND
 - 04-03-SUMMARY.md: FOUND
 - Commit 37c8ac5: FOUND
 - Commit 81fc9e0: FOUND
-- TypeScript (npx tsc --noEmit): CLEAN
+- Commit 0959303: FOUND
+- TypeScript (tsc --noEmit): CLEAN
 - All Task 1 acceptance criteria: PASS
 - All Task 2 acceptance criteria: PASS
+- Leaderboard proxy fix: APPLIED
+- TitleShop proxy fix: APPLIED
 
 ---
 *Phase: 04-competition-and-social*

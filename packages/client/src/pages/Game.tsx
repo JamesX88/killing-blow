@@ -16,6 +16,7 @@ export default function Game() {
   const { isAuthenticated } = useSessionStore()
   const { bossId, name, hp, maxHp, bossNumber, isDefeated, defeatMessage } = useBossStore()
   const { activePlayers } = usePlayerStore()
+  const { spdLevel } = useProgressionStore()
 
   // Connect socket and subscribe to game events on mount
   useEffect(() => {
@@ -41,6 +42,19 @@ export default function Game() {
       socket.disconnect()
     }
   }, [isAuthenticated])
+
+  // Auto-attack loop — interval matches server-side attackDelay for the player's SPD level
+  useEffect(() => {
+    if (!isAuthenticated) return
+    const attackDelay = Math.max(50, Math.floor(1000 / (1.0 + spdLevel * 0.05)))
+    const interval = setInterval(() => {
+      const boss = useBossStore.getState()
+      if (boss.bossId && !boss.isDefeated && socket.connected) {
+        socket.emit('attack:intent', { bossId: boss.bossId })
+      }
+    }, attackDelay)
+    return () => clearInterval(interval)
+  }, [isAuthenticated, spdLevel])
 
   // Tab heartbeat for active-play bonus
   useEffect(() => {

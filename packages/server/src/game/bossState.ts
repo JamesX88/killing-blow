@@ -73,8 +73,10 @@ export async function spawnNextBoss(
     Math.min(MAX_BOSS_HP, Math.max(MIN_BOSS_HP, overrideMaxHp != null && overrideMaxHp > 0 ? overrideMaxHp : BOSS_MAX_HP))
   )
 
-  const boss = await prisma.boss.create({
-    data: { bossNumber, name, maxHp },
+  const boss = await prisma.boss.upsert({
+    where: { bossNumber },
+    update: {},
+    create: { bossNumber, name, maxHp },
   })
 
   const bossId = boss.id

@@ -125,15 +125,21 @@ Exceptions:
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px | 400 (regular) | 1.5 | Player names, panel labels, lore text, stat descriptions |
-| Label | 16px | 600 (semibold) | 1.5 | Panel section headings, stat names, upgrade cost labels |
-| Heading | 20px | 600 (semibold) | 1.2 | Upgrade/Title shop panel headings, KBA top contributors heading |
-| Display | 28px | 700 (bold) | 1.1 | Boss name above sprite, HP numbers, KB balance, kill count |
+| Label | 16px | 400 (regular) | 1.5 | Panel section headings, stat names, upgrade cost labels |
+| Heading | 20px | 700 (bold) | 1.2 | Upgrade/Title shop panel headings, KBA top contributors heading |
+| Display | 28px | 700 (bold) | 1.1 | Boss name above sprite, HP numbers, KB balance, kill count, "Killing Blow!" announcement headline |
 
-Declared scale: 14px, 16px, 20px, 28px — exactly 4 sizes. Same scale as Phase 4 contract — no new sizes added.
+Declared scale: 14px, 16px, 20px, 28px — exactly 4 sizes. Declared weights: 400 (regular) and 700 (bold) — exactly 2 weights. Same scale as Phase 4 contract — no new sizes added.
+
+**Weight reclassification from Phase 4 semibold (600):**
+- Phase 4 used weight 600 (semibold) for Label and Heading roles. Phase 5 eliminates semibold entirely.
+- Label (16px): reclassified to 400 (regular). These are supporting UI labels where visual separation comes from size, color, and layout — not weight.
+- Heading (20px): reclassified to 700 (bold). These are true section headings that need prominence and hierarchy contrast against body text.
 
 **Phase 5 additions within existing scale:**
 
 - Boss name: 28px display, weight 700 (bold), with `text-shadow: 0 0 20px rgba(220, 38, 38, 0.6)` glow — creates "gothic title" effect without adding a new size
+- "Killing Blow!" announcement headline: 28px display, weight 700 (bold). Dramatic impact is achieved via weight 700 + `box-shadow: 0 0 40px rgba(220,38,38,0.4)` card glow + spring-physics scale entry animation — not a larger type size. No 36px token exists.
 - Damage numbers: remain at existing `text-xl` (20px) but size varies by damage magnitude — crit hits render at 28px to distinguish visually (no new type token — use conditional class)
 - All other usage inherits from Phase 4 typography contract unchanged
 
@@ -176,7 +182,7 @@ All base values are CSS custom properties from `index.css` (oklch color space). 
 ```
 
 Accent (`--primary` red-600) reserved for — extends Phase 4 list:
-1. Primary CTA buttons (shadcn `<Button variant="default">`) — Attack Boss button
+1. Primary CTA buttons (shadcn `<Button variant="default">`) — Attack button
 2. Boss HP bar fill
 3. `--ring` focus ring on interactive elements
 4. Active DPS bonus badge (`bg-primary/20 text-primary`)
@@ -332,6 +338,7 @@ New effects, none currently exist:
 - Minimum height: 64px (primary action; larger than standard 44px)
 - Width: full width on mobile; constrained max-width 320px centered on desktop
 - Idle state: `bg-primary` (red-600), bold label "Attack"
+- Label decision: "Attack" (single word, no noun). A gothic dungeon game-feel demands brevity and aggression. "Attack Boss" is redundant — the boss is the only target. The single imperative word is more impactful. Decision: keep "Attack".
 - Disabled state (boss defeated): `opacity-50`, no animation
 - Press feedback: `active:scale-95` CSS transform, 100ms
 - No long-press or hold behavior — single tap triggers one emit (auto-attack loop handles repeat)
@@ -350,8 +357,8 @@ Inherits Phase 4 contract. Phase 5 additions:
 - Entry animation: spring physics (`type: "spring", stiffness: 400, damping: 20`) replaces linear ease
 - Card receives `box-shadow: 0 0 40px rgba(220,38,38,0.4)` glow on entry
 - Backdrop changes from `bg-black/70` to `bg-black/80` for more drama
-- Winner name size: 28px bold (upgraded from 20px semibold in Phase 4 spec)
-- "Killing Blow!" headline: 36px bold (upgraded from 28px — this is the display moment)
+- Winner name: 28px bold (upgraded from 20px in Phase 4 spec)
+- "Killing Blow!" headline: 28px bold (same display token as boss name). Dramatic impact delivered by weight 700 + card `box-shadow` glow + spring-physics scale entry animation. No additional type size is needed or permitted.
 
 ### Navigation
 
@@ -409,7 +416,7 @@ Inherits all Phase 4 copywriting. Phase 5 additions and changes:
 
 | Element | Copy |
 |---------|------|
-| Primary CTA — Attack button | "Attack" (single word — more impactful than "Attack Boss") |
+| Primary CTA — Attack button | "Attack" (single word — more impactful than "Attack Boss" in a gothic dungeon context; the boss is the only target, making the noun redundant) |
 | Boss death screen headline | "Killing Blow!" (unchanged) |
 | Leaderboard nav tooltip | "Leaderboard" |
 | Upgrade drawer tab label | "Upgrades" |

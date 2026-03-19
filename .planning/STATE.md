@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-19T19:08:47.499Z"
+stopped_at: Completed 05-03-PLAN.md Task 1; awaiting human-verify checkpoint for Task 2
+last_updated: "2026-03-19T19:15:35.030Z"
 last_activity: 2026-03-19 — Plan 03-02 complete; server logic for gold/upgrades/heartbeat/offline/dynamic-boss-hp
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 18
-  completed_plans: 16
+  completed_plans: 17
   percent: 22
 ---
 
@@ -66,6 +66,7 @@ Progress: [██░░░░░░░░] 22%
 | Phase 04-competition-and-social P03 | 15 | 3 tasks | 1 files |
 | Phase 05-ui-overhaul-mobile-game-feel P01 | 2 | 2 tasks | 4 files |
 | Phase 05-ui-overhaul-mobile-game-feel PP02 | 6 | 2 tasks | 8 files |
+| Phase 05-ui-overhaul-mobile-game-feel P03 | 2 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -120,6 +121,8 @@ Recent decisions affecting current work:
 - [Phase 05-02]: SVG silhouettes use filled dark paths with red eyes - recognizable boss shapes without image asset pipeline
 - [Phase 05-02]: UpgradePanel Card components removed - plain div with dark glass is Phase 5 pattern
 - [Phase 05-02]: Crit detection uses amount >= 75 threshold (3x BASE_DAMAGE=25) since server has no isCrit flag
+- [Phase 05-03]: Kill flash triggered from boss:death socket event, not zustand isDefeated — prevents race condition on remount
+- [Phase 05-03]: Screen shake applied to contentRef (content layer) not game root — prevents overflow clipping during transform
 
 ### Pending Todos
 
@@ -132,6 +135,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T19:08:47.497Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-19T19:15:35.028Z
+Stopped at: Completed 05-03-PLAN.md Task 1; awaiting human-verify checkpoint for Task 2
 Resume file: None
